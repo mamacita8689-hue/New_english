@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/alphabet.dart';
 import '../models/letter_lesson.dart';
 import '../services/audio_service.dart';
+import 'alphabet_practice_screen.dart';
 
 class AlphabetScreen extends StatefulWidget {
   const AlphabetScreen({super.key});
@@ -53,6 +54,14 @@ class _AlphabetScreenState extends State<AlphabetScreen> {
     }
   }
 
+  void _openPractice(AlphabetPracticeMode mode) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AlphabetPracticeScreen(mode: mode),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _audio.dispose();
@@ -77,7 +86,55 @@ class _AlphabetScreenState extends State<AlphabetScreen> {
               style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
             ),
             const SizedBox(height: 18),
+            _buildPracticeCard(),
+            const SizedBox(height: 18),
             ...alphabetLessons.map(_buildLetterCard),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPracticeCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Row(
+              children: [
+                Text('🎯', style: TextStyle(fontSize: 34)),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Тренировка',
+                    style: TextStyle(fontSize: 23, fontWeight: FontWeight.w900),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'По 10 коротких заданий. Ошибся — просто слушаем ещё раз и пробуем снова.',
+              style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
+            ),
+            const SizedBox(height: 14),
+            FilledButton.icon(
+              onPressed: () => _openPractice(
+                AlphabetPracticeMode.hearAndChooseLetter,
+              ),
+              icon: const Icon(Icons.hearing_rounded),
+              label: const Text('Услышь звук → выбери букву'),
+            ),
+            const SizedBox(height: 10),
+            FilledButton.tonalIcon(
+              onPressed: () => _openPractice(
+                AlphabetPracticeMode.seeAndChooseSound,
+              ),
+              icon: const Icon(Icons.volume_up_rounded),
+              label: const Text('Увидь букву → выбери звук'),
+            ),
           ],
         ),
       ),
