@@ -6,7 +6,8 @@ const shLesson = SoundLesson(
   grapheme: 'SH',
   phoneme: '/ʃ/',
   explanation: 'Буквы S и H вместе часто дают один звук. Послушай примеры и запомни сочетание SH.',
-  phonemeAudioAsset: null,
+  phonemeAudioUrl: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Voiceless_palato-alveolar_sibilant.ogg',
+  audioCredit: 'Peter Isotalo — Wikimedia Commons, CC BY-SA 3.0 / GFDL',
   examples: [
     ExampleWord(word: 'ship', emoji: '🚢'),
     ExampleWord(word: 'fish', emoji: '🐟'),
@@ -32,7 +33,8 @@ const chLesson = SoundLesson(
   grapheme: 'CH',
   phoneme: '/tʃ/',
   explanation: 'Буквы C и H вместе часто дают звук /tʃ/. Послушай слова и найди сочетание CH.',
-  phonemeAudioAsset: null,
+  phonemeAudioUrl: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Voiceless_palato-alveolar_affricate.ogg',
+  audioCredit: 'Peter Isotalo — Wikimedia Commons, CC BY-SA 3.0',
   examples: [
     ExampleWord(word: 'chair', emoji: '🪑'),
     ExampleWord(word: 'chicken', emoji: '🐔'),
@@ -58,7 +60,8 @@ const thVoicelessLesson = SoundLesson(
   grapheme: 'TH',
   phoneme: '/θ/',
   explanation: 'В некоторых словах TH произносится без голоса: /θ/. Кончик языка слегка находится между зубами.',
-  phonemeAudioAsset: null,
+  phonemeAudioUrl: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Voiceless_dental_fricative.ogg',
+  audioCredit: 'Peter Isotalo — Wikimedia Commons, CC BY-SA 3.0 / GFDL',
   examples: [
     ExampleWord(word: 'three', emoji: '3️⃣'),
     ExampleWord(word: 'think', emoji: '💭'),
@@ -84,7 +87,8 @@ const thVoicedLesson = SoundLesson(
   grapheme: 'TH',
   phoneme: '/ð/',
   explanation: 'В других словах TH произносится с голосом: /ð/. Положение языка похоже на /θ/, но голосовые связки работают.',
-  phonemeAudioAsset: null,
+  phonemeAudioUrl: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Voiced_dental_fricative.ogg',
+  audioCredit: 'Peter Isotalo — Wikimedia Commons, CC BY-SA 3.0 / GFDL',
   examples: [
     ExampleWord(word: 'this', emoji: '👉'),
     ExampleWord(word: 'mother', emoji: '👩'),
