@@ -1,0 +1,14 @@
+{
+  "name": "New English Flutter",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Flutter Web",
+      "onAutoForward": "openPreview"
+    }
+  },
+  "postCreateCommand": "flutter doctor && flutter pub get"
+}
