@@ -18,15 +18,23 @@ class LessonAudioService {
   Future<void> speakWord(String word) async {
     await _configureTts();
     await _tts.stop();
+    await _player.stop();
     await _tts.speak(word);
   }
 
   Future<void> playPhonemeAsset(String assetPath) async {
+    await _tts.stop();
     await _player.stop();
     final normalized = assetPath.startsWith('assets/')
         ? assetPath.substring('assets/'.length)
         : assetPath;
     await _player.play(AssetSource(normalized));
+  }
+
+  Future<void> playPhonemeUrl(String url) async {
+    await _tts.stop();
+    await _player.stop();
+    await _player.play(UrlSource(url));
   }
 
   Future<void> dispose() async {
