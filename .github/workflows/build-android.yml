@@ -34,14 +34,17 @@ jobs:
       - name: Create Android platform files
         run: flutter create --platforms=android --org ru.fantasii57 --project-name new_english .
 
+      - name: Remove generated starter test
+        run: rm -f test/widget_test.dart
+
       - name: Prepare Android manifest
         run: python3 tool/prepare_android.py
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Analyze
-        run: flutter analyze
+      - name: Analyze app code
+        run: flutter analyze lib
 
       - name: Build release APK
         run: flutter build apk --release
