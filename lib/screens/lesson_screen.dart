@@ -30,17 +30,36 @@ class _LessonScreenState extends State<LessonScreen> {
   }
 
   Future<void> _playPhoneme() async {
+    if (_playing) return;
+
     final asset = widget.lesson.phonemeAudioAsset;
-    if (asset == null) {
+    final url = widget.lesson.phonemeAudioUrl;
+
+    if (asset == null && url == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Для отдельного звука подключим эталонную запись носителя языка.'),
-        ),
+        const SnackBar(content: Text('Аудиозапись этого звука пока не добавлена.')),
       );
       return;
     }
 
-    await _audio.playPhonemeAsset(asset);
+    setState(() => _playing = true);
+    try {
+      if (asset != null) {
+        await _audio.playPhonemeAsset(asset);
+      } else if (url != null) {
+        await _audio.playPhonemeUrl(url);
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Не удалось загрузить звук. Проверь подключение к интернету.'),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _playing = false);
+    }
   }
 
   @override
@@ -78,9 +97,9 @@ class _LessonScreenState extends State<LessonScreen> {
                   ),
                   const SizedBox(height: 18),
                   FilledButton.icon(
-                    onPressed: _playPhoneme,
-                    icon: const Icon(Icons.volume_up_rounded),
-                    label: const Text('Послушать звук'),
+                    onPressed: _playing ? null : _playPhoneme,
+                    icon: Icon(_playing ? Icons.hourglass_top_rounded : Icons.volume_up_rounded),
+                    label: Text(_playing ? 'Загрузка...' : 'Послушать звук'),
                   ),
                 ],
               ),
@@ -114,7 +133,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         ),
                         IconButton.filledTonal(
                           tooltip: 'Послушать ${example.word}',
-                          onPressed: () => _speakWord(example.word),
+                          onPressed: _playing ? null : () => _speakWord(example.word),
                           icon: const Icon(Icons.volume_up_rounded),
                         ),
                       ],
@@ -123,6 +142,13 @@ class _LessonScreenState extends State<LessonScreen> {
                 ),
               ),
             ),
+            if (lesson.audioCredit != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Аудио фонемы: ${lesson.audioCredit}',
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              ),
+            ],
             const SizedBox(height: 18),
             FilledButton(
               style: FilledButton.styleFrom(
