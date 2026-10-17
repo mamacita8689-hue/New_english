@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/lessons.dart';
+import '../models/lesson.dart';
 import 'lesson_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -26,33 +27,32 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
             ),
             const SizedBox(height: 24),
-            _LessonCard(
-              title: 'SH',
-              subtitle: 'Звук ${shLesson.phoneme}',
-              emoji: '🚢',
-              enabled: true,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const LessonScreen(lesson: shLesson),
-                  ),
-                );
-              },
-            ),
-            const SizedBox(height: 12),
-            const _LessonCard(
-              title: 'CH',
-              subtitle: 'Следующий урок',
-              emoji: '🪑',
-              enabled: false,
-            ),
-            const SizedBox(height: 12),
-            const _LessonCard(
-              title: 'TH',
-              subtitle: 'Скоро',
-              emoji: '3️⃣',
-              enabled: false,
-            ),
+            ...soundLessons.asMap().entries.map((entry) {
+              final index = entry.key;
+              final lesson = entry.value;
+              final emoji = switch (lesson.id) {
+                'sh' => '🚢',
+                'ch' => '🪑',
+                'th_voiceless' => '3️⃣',
+                'th_voiced' => '👉',
+                _ => '🔤',
+              };
+
+              return Padding(
+                padding: EdgeInsets.only(bottom: index == soundLessons.length - 1 ? 0 : 12),
+                child: _LessonCard(
+                  lesson: lesson,
+                  emoji: emoji,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => LessonScreen(lesson: lesson),
+                      ),
+                    );
+                  },
+                ),
+              );
+            }),
           ],
         ),
       ),
@@ -61,25 +61,21 @@ class HomeScreen extends StatelessWidget {
 }
 
 class _LessonCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
+  final SoundLesson lesson;
   final String emoji;
-  final bool enabled;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   const _LessonCard({
-    required this.title,
-    required this.subtitle,
+    required this.lesson,
     required this.emoji,
-    required this.enabled,
-    this.onTap,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: InkWell(
-        onTap: enabled ? onTap : null,
+        onTap: onTap,
         borderRadius: BorderRadius.circular(22),
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -90,9 +86,7 @@ class _LessonCard extends StatelessWidget {
                 height: 64,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: enabled
-                      ? Theme.of(context).colorScheme.primaryContainer
-                      : Colors.grey.shade200,
+                  color: Theme.of(context).colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(18),
                 ),
                 child: Text(emoji, style: const TextStyle(fontSize: 34)),
@@ -103,20 +97,17 @@ class _LessonCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      lesson.grapheme,
                       style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
                     ),
                     Text(
-                      subtitle,
+                      '${lesson.title} • ${lesson.phoneme}',
                       style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
                     ),
                   ],
                 ),
               ),
-              Icon(
-                enabled ? Icons.arrow_forward_ios_rounded : Icons.lock_outline,
-                size: 20,
-              ),
+              const Icon(Icons.arrow_forward_ios_rounded, size: 20),
             ],
           ),
         ),
