@@ -7,8 +7,8 @@
   "portsAttributes": {
     "3000": {
       "label": "Flutter Web",
-      "onAutoForward": "openPreview"
+      "onAutoForward": "openBrowser"
     }
   },
-  "postCreateCommand": "flutter doctor && flutter pub get"
+  "postCreateCommand": "git config --global --add safe.directory /opt/flutter && flutter --version && flutter pub get"
 }
