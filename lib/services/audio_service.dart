@@ -22,6 +22,13 @@ class LessonAudioService {
     await _tts.speak(word);
   }
 
+  Future<void> speakLetterName(String letter) async {
+    await _configureTts();
+    await _tts.stop();
+    await _player.stop();
+    await _tts.speak(letter);
+  }
+
   Future<void> playPhonemeAsset(String assetPath) async {
     await _tts.stop();
     await _player.stop();
@@ -35,6 +42,15 @@ class LessonAudioService {
     await _tts.stop();
     await _player.stop();
     await _player.play(UrlSource(url));
+  }
+
+  Future<void> playPhonemeUrls(List<String> urls) async {
+    await _tts.stop();
+    await _player.stop();
+    for (final url in urls) {
+      await _player.play(UrlSource(url));
+      await _player.onPlayerComplete.first;
+    }
   }
 
   Future<void> dispose() async {
