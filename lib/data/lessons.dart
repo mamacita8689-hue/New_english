@@ -6,7 +6,7 @@ const shLesson = SoundLesson(
   grapheme: 'SH',
   phoneme: '/ʃ/',
   explanation: 'Буквы S и H вместе часто дают один звук. Послушай примеры и запомни сочетание SH.',
-  phonemeAudioUrl: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Voiceless_palato-alveolar_sibilant.ogg',
+  phonemeAudioUrl: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/c/cc/Voiceless_palato-alveolar_sibilant.ogg/Voiceless_palato-alveolar_sibilant.ogg.mp3',
   audioCredit: 'Peter Isotalo — Wikimedia Commons, CC BY-SA 3.0 / GFDL',
   examples: [
     ExampleWord(word: 'ship', emoji: '🚢'),
@@ -33,7 +33,7 @@ const chLesson = SoundLesson(
   grapheme: 'CH',
   phoneme: '/tʃ/',
   explanation: 'Буквы C и H вместе часто дают звук /tʃ/. Послушай слова и найди сочетание CH.',
-  phonemeAudioUrl: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Voiceless_palato-alveolar_affricate.ogg',
+  phonemeAudioUrl: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/9/97/Voiceless_palato-alveolar_affricate.ogg/Voiceless_palato-alveolar_affricate.ogg.mp3',
   audioCredit: 'Peter Isotalo — Wikimedia Commons, CC BY-SA 3.0',
   examples: [
     ExampleWord(word: 'chair', emoji: '🪑'),
@@ -60,7 +60,7 @@ const thVoicelessLesson = SoundLesson(
   grapheme: 'TH',
   phoneme: '/θ/',
   explanation: 'В некоторых словах TH произносится без голоса: /θ/. Кончик языка слегка находится между зубами.',
-  phonemeAudioUrl: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Voiceless_dental_fricative.ogg',
+  phonemeAudioUrl: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/8/80/Voiceless_dental_fricative.ogg/Voiceless_dental_fricative.ogg.mp3',
   audioCredit: 'Peter Isotalo — Wikimedia Commons, CC BY-SA 3.0 / GFDL',
   examples: [
     ExampleWord(word: 'three', emoji: '3️⃣'),
@@ -87,7 +87,7 @@ const thVoicedLesson = SoundLesson(
   grapheme: 'TH',
   phoneme: '/ð/',
   explanation: 'В других словах TH произносится с голосом: /ð/. Положение языка похоже на /θ/, но голосовые связки работают.',
-  phonemeAudioUrl: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Voiced_dental_fricative.ogg',
+  phonemeAudioUrl: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/6/6a/Voiced_dental_fricative.ogg/Voiced_dental_fricative.ogg.mp3',
   audioCredit: 'Peter Isotalo — Wikimedia Commons, CC BY-SA 3.0 / GFDL',
   examples: [
     ExampleWord(word: 'this', emoji: '👉'),
