@@ -6,8 +6,8 @@ const shLesson = SoundLesson(
   grapheme: 'SH',
   phoneme: '/ʃ/',
   explanation: 'Буквы S и H вместе часто дают один звук. Послушай примеры и запомни сочетание SH.',
-  phonemeAudioUrl: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/c/cc/Voiceless_palato-alveolar_sibilant.ogg/Voiceless_palato-alveolar_sibilant.ogg.mp3',
-  audioCredit: 'Peter Isotalo — Wikimedia Commons, CC BY-SA 3.0 / GFDL',
+  phonemeAudioUrl: 'https://raw.githubusercontent.com/minormending/learn-letters/main/audio/sh.mp3',
+  audioCredit: 'Тестовый UK phonics-аудионабор — minormending/learn-letters',
   examples: [
     ExampleWord(word: 'ship', emoji: '🚢'),
     ExampleWord(word: 'fish', emoji: '🐟'),
@@ -33,8 +33,8 @@ const chLesson = SoundLesson(
   grapheme: 'CH',
   phoneme: '/tʃ/',
   explanation: 'Буквы C и H вместе часто дают звук /tʃ/. Послушай слова и найди сочетание CH.',
-  phonemeAudioUrl: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/9/97/Voiceless_palato-alveolar_affricate.ogg/Voiceless_palato-alveolar_affricate.ogg.mp3',
-  audioCredit: 'Peter Isotalo — Wikimedia Commons, CC BY-SA 3.0',
+  phonemeAudioUrl: 'https://raw.githubusercontent.com/minormending/learn-letters/main/audio/ch-chair.mp3',
+  audioCredit: 'Тестовый UK phonics-аудионабор — minormending/learn-letters',
   examples: [
     ExampleWord(word: 'chair', emoji: '🪑'),
     ExampleWord(word: 'chicken', emoji: '🐔'),
@@ -60,8 +60,8 @@ const thVoicelessLesson = SoundLesson(
   grapheme: 'TH',
   phoneme: '/θ/',
   explanation: 'В некоторых словах TH произносится без голоса: /θ/. Кончик языка слегка находится между зубами.',
-  phonemeAudioUrl: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/8/80/Voiceless_dental_fricative.ogg/Voiceless_dental_fricative.ogg.mp3',
-  audioCredit: 'Peter Isotalo — Wikimedia Commons, CC BY-SA 3.0 / GFDL',
+  phonemeAudioUrl: 'https://raw.githubusercontent.com/minormending/learn-letters/main/audio/th-thing.mp3',
+  audioCredit: 'Тестовый UK phonics-аудионабор — minormending/learn-letters',
   examples: [
     ExampleWord(word: 'three', emoji: '3️⃣'),
     ExampleWord(word: 'think', emoji: '💭'),
@@ -87,8 +87,8 @@ const thVoicedLesson = SoundLesson(
   grapheme: 'TH',
   phoneme: '/ð/',
   explanation: 'В других словах TH произносится с голосом: /ð/. Положение языка похоже на /θ/, но голосовые связки работают.',
-  phonemeAudioUrl: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/6/6a/Voiced_dental_fricative.ogg/Voiced_dental_fricative.ogg.mp3',
-  audioCredit: 'Peter Isotalo — Wikimedia Commons, CC BY-SA 3.0 / GFDL',
+  phonemeAudioUrl: 'https://raw.githubusercontent.com/minormending/learn-letters/main/audio/th-that.mp3',
+  audioCredit: 'Тестовый UK phonics-аудионабор — minormending/learn-letters',
   examples: [
     ExampleWord(word: 'this', emoji: '👉'),
     ExampleWord(word: 'mother', emoji: '👩'),
