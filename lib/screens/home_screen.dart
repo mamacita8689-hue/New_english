@@ -3,6 +3,7 @@ import '../data/lessons.dart';
 import '../models/lesson.dart';
 import 'alphabet_screen.dart';
 import 'lesson_screen.dart';
+import 'sound_practice_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -73,6 +74,54 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 12),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Text(
+                      '🎯 Тренировка сочетаний',
+                      style: TextStyle(fontSize: 21, fontWeight: FontWeight.w900),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'SH, CH, TH, NG, EE, OO, AI, OA',
+                      style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
+                    ),
+                    const SizedBox(height: 14),
+                    FilledButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const SoundPracticeScreen(
+                              mode: SoundPracticeMode.hearAndChooseGrapheme,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.hearing_rounded),
+                      label: const Text('Услышь звук → выбери сочетание'),
+                    ),
+                    const SizedBox(height: 10),
+                    FilledButton.tonalIcon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const SoundPracticeScreen(
+                              mode: SoundPracticeMode.seeAndChooseSound,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.volume_up_rounded),
+                      label: const Text('Увидь сочетание → выбери звук'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
             ...soundLessons.asMap().entries.map((entry) {
               final index = entry.key;
               final lesson = entry.value;
@@ -81,6 +130,12 @@ class HomeScreen extends StatelessWidget {
                 'ch' => '🪑',
                 'th_voiceless' => '3️⃣',
                 'th_voiced' => '👉',
+                'ng' => '🎵',
+                'ee' => '👀',
+                'oo_long' => '🌙',
+                'oo_short' => '📖',
+                'ai' => '🌧️',
+                'oa' => '⛵',
                 _ => '🔤',
               };
 
