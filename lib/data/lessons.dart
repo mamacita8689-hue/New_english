@@ -7,7 +7,7 @@ const shLesson = SoundLesson(
   phoneme: '/ʃ/',
   explanation: 'Буквы S и H вместе часто дают один звук. Послушай примеры и запомни сочетание SH.',
   phonemeAudioUrl: 'https://raw.githubusercontent.com/minormending/learn-letters/main/audio/sh.mp3',
-  audioCredit: 'Тестовый UK phonics-аудионабор — minormending/learn-letters',
+  audioCredit: 'UK phonics-аудионабор — minormending/learn-letters',
   examples: [
     ExampleWord(word: 'ship', emoji: '🚢'),
     ExampleWord(word: 'fish', emoji: '🐟'),
@@ -34,7 +34,7 @@ const chLesson = SoundLesson(
   phoneme: '/tʃ/',
   explanation: 'Буквы C и H вместе часто дают звук /tʃ/. Послушай слова и найди сочетание CH.',
   phonemeAudioUrl: 'https://raw.githubusercontent.com/minormending/learn-letters/main/audio/ch-chair.mp3',
-  audioCredit: 'Тестовый UK phonics-аудионабор — minormending/learn-letters',
+  audioCredit: 'UK phonics-аудионабор — minormending/learn-letters',
   examples: [
     ExampleWord(word: 'chair', emoji: '🪑'),
     ExampleWord(word: 'chicken', emoji: '🐔'),
@@ -61,7 +61,7 @@ const thVoicelessLesson = SoundLesson(
   phoneme: '/θ/',
   explanation: 'В некоторых словах TH произносится без голоса: /θ/. Кончик языка слегка находится между зубами.',
   phonemeAudioUrl: 'https://raw.githubusercontent.com/minormending/learn-letters/main/audio/th-thing.mp3',
-  audioCredit: 'Тестовый UK phonics-аудионабор — minormending/learn-letters',
+  audioCredit: 'UK phonics-аудионабор — minormending/learn-letters',
   examples: [
     ExampleWord(word: 'three', emoji: '3️⃣'),
     ExampleWord(word: 'think', emoji: '💭'),
@@ -88,7 +88,7 @@ const thVoicedLesson = SoundLesson(
   phoneme: '/ð/',
   explanation: 'В других словах TH произносится с голосом: /ð/. Положение языка похоже на /θ/, но голосовые связки работают.',
   phonemeAudioUrl: 'https://raw.githubusercontent.com/minormending/learn-letters/main/audio/th-that.mp3',
-  audioCredit: 'Тестовый UK phonics-аудионабор — minormending/learn-letters',
+  audioCredit: 'UK phonics-аудионабор — minormending/learn-letters',
   examples: [
     ExampleWord(word: 'this', emoji: '👉'),
     ExampleWord(word: 'mother', emoji: '👩'),
