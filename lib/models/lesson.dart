@@ -27,6 +27,8 @@ class SoundLesson {
   final String phoneme;
   final String explanation;
   final String? phonemeAudioAsset;
+  final String? phonemeAudioUrl;
+  final String? audioCredit;
   final List<ExampleWord> examples;
   final List<QuizQuestion> quiz;
 
@@ -39,5 +41,7 @@ class SoundLesson {
     required this.examples,
     required this.quiz,
     this.phonemeAudioAsset,
+    this.phonemeAudioUrl,
+    this.audioCredit,
   });
 }
