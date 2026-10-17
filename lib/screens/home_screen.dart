@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/lessons.dart';
 import '../models/lesson.dart';
+import 'alphabet_screen.dart';
 import 'lesson_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -27,6 +28,51 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
             ),
             const SizedBox(height: 24),
+            Card(
+              child: InkWell(
+                borderRadius: BorderRadius.circular(22),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const AlphabetScreen()),
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 64,
+                        height: 64,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.secondaryContainer,
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: const Text('Aa', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900)),
+                      ),
+                      const SizedBox(width: 16),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Алфавит и звуки', style: TextStyle(fontSize: 23, fontWeight: FontWeight.w800)),
+                            SizedBox(height: 3),
+                            Text('A–Z • название буквы • основной звук', style: TextStyle(fontSize: 15)),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.arrow_forward_ios_rounded, size: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Сочетания букв',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 12),
             ...soundLessons.asMap().entries.map((entry) {
               final index = entry.key;
               final lesson = entry.value;
