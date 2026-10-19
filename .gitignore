@@ -1,0 +1,24 @@
+# Flutter / Dart
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+pubspec.lock
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Official Spotlight 2 audio is used locally as the pronunciation reference.
+# Do not publish the publisher's audio files in this public repository.
+assets/audio/spotlight2_part1/*.mp3
+assets/audio/spotlight2_part1/*.wav
+assets/audio/spotlight2_part1/*.m4a
+assets/audio/spotlight2_part1/*.ogg
+assets/audio/spotlight2_part1/*.aac
+assets/audio/spotlight2_part1/*.flac
+
+# Keep documentation/placeholders in the folder tracked.
+!assets/audio/spotlight2_part1/README.txt
