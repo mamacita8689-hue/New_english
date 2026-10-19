@@ -127,7 +127,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'SH, CH, TH, NG, EE, OO, AI, OA',
+                      'Spotlight: SH, CH, TH, PH • плюс дополнительные сочетания',
                       style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
                     ),
                     const SizedBox(height: 14),
@@ -167,10 +167,11 @@ class HomeScreen extends StatelessWidget {
               final index = entry.key;
               final lesson = entry.value;
               final emoji = switch (lesson.id) {
-                'sh' => '🚢',
-                'ch' => '🪑',
-                'th_voiceless' => '3️⃣',
+                'sh' => '🐑',
+                'ch' => '🐥',
+                'th_voiceless' => '👍',
                 'th_voiced' => '👉',
+                'ph' => '📷',
                 'ng' => '🎵',
                 'ee' => '👀',
                 'oo_long' => '🌙',
