@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/lessons.dart';
 import '../models/lesson.dart';
 import 'alphabet_screen.dart';
+import 'blending_screen.dart';
 import 'lesson_screen.dart';
 import 'sound_practice_screen.dart';
 
@@ -59,6 +60,46 @@ class HomeScreen extends StatelessWidget {
                             Text('Алфавит и звуки', style: TextStyle(fontSize: 23, fontWeight: FontWeight.w800)),
                             SizedBox(height: 3),
                             Text('A–Z • название буквы • основной звук', style: TextStyle(fontSize: 15)),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.arrow_forward_ios_rounded, size: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Card(
+              child: InkWell(
+                borderRadius: BorderRadius.circular(22),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const BlendingScreen()),
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 64,
+                        height: 64,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.tertiaryContainer,
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: const Text('c-a-t', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+                      ),
+                      const SizedBox(width: 16),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Складываем слова', style: TextStyle(fontSize: 23, fontWeight: FontWeight.w800)),
+                            SizedBox(height: 3),
+                            Text('Слушаем звуки → соединяем → читаем слово', style: TextStyle(fontSize: 15)),
                           ],
                         ),
                       ),
