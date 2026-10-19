@@ -37,84 +37,21 @@ class LessonAudioService {
 
   Future<void> _configureTts() async {
     if (_configured) return;
-
     await _tts.setLanguage('en-GB');
-    await _selectPreferredBritishVoice();
     await _tts.setPitch(1.0);
     await _tts.setVolume(1.0);
     _configured = true;
   }
 
-  Future<void> _selectPreferredBritishVoice() async {
-    try {
-      final dynamic rawVoices = await _tts.getVoices;
-      if (rawVoices is! List) return;
-
-      Map<dynamic, dynamic>? firstBritish;
-      Map<dynamic, dynamic>? preferred;
-
-      for (final voice in rawVoices) {
-        if (voice is! Map) continue;
-
-        final localeRaw = '${voice['locale'] ?? ''}';
-        final locale = localeRaw.replaceAll('_', '-').toLowerCase();
-        if (locale != 'en-gb' && !locale.startsWith('en-gb')) continue;
-
-        firstBritish ??= voice;
-
-        final name = '${voice['name'] ?? ''}'.toLowerCase();
-        final isStrongPreference =
-            name.contains('google uk english female') ||
-            name.contains('sonia') ||
-            name.contains('libby') ||
-            name.contains('natural');
-
-        if (isStrongPreference) {
-          preferred = voice;
-          break;
-        }
-      }
-
-      final selected = preferred ?? firstBritish;
-      if (selected == null) return;
-
-      final name = '${selected['name'] ?? ''}';
-      final locale = '${selected['locale'] ?? 'en-GB'}';
-      if (name.isEmpty) return;
-
-      await _tts.setVoice({
-        'name': name,
-        'locale': locale,
-      });
-    } catch (_) {
-      // Если устройство не сообщает список голосов, остаёмся на en-GB.
-    }
+  String _safeName(String text) {
+    return text
+        .trim()
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
+        .replaceAll(RegExp(r'^_+|_+$'), '');
   }
 
-  Future<void> speakWord(String word) async {
-    await _configureTts();
-    await _tts.stop();
-    await _player.stop();
-
-    // Немного быстрее прежнего: на 0.38 некоторые короткие слова,
-    // особенно queen, звучали слишком растянуто и неестественно.
-    await _tts.setSpeechRate(0.45);
-    await _tts.speak(word);
-  }
-
-  Future<void> speakLetterName(String letter) async {
-    await _configureTts();
-    await _tts.stop();
-    await _player.stop();
-
-    final normalized = letter.trim().toUpperCase();
-    final spoken = _britishLetterNames[normalized] ?? normalized;
-
-    await _tts.setSpeechRate(0.40);
-    await _tts.speak(spoken);
-  }
-
-  Future<void> playPhonemeAsset(String assetPath) async {
+  Future<void> _playAsset(String assetPath) async {
     await _tts.stop();
     await _player.stop();
     final normalized = assetPath.startsWith('assets/')
@@ -123,17 +60,65 @@ class LessonAudioService {
     await _player.play(AssetSource(normalized));
   }
 
-  Future<void> playPhonemeUrl(String url) async {
+  Future<void> speakWord(String word) async {
+    final asset = 'audio/word_${_safeName(word)}.mp3';
+    try {
+      await _playAsset(asset);
+      return;
+    } catch (_) {
+      // В режиме разработки без сгенерированных assets остаётся запасной TTS.
+    }
+
+    await _configureTts();
     await _tts.stop();
     await _player.stop();
-    await _player.play(UrlSource(url));
+    await _tts.setSpeechRate(0.45);
+    await _tts.speak(word);
   }
 
-  Future<void> playPhonemeUrls(List<String> urls) async {
+  Future<void> speakLetterName(String letter) async {
+    final normalized = letter.trim().toUpperCase();
+    try {
+      await _playAsset('audio/letter_$normalized.mp3');
+      return;
+    } catch (_) {
+      // Запасной вариант только для разработки.
+    }
+
+    await _configureTts();
     await _tts.stop();
     await _player.stop();
-    for (final url in urls) {
-      await _player.play(UrlSource(url));
+    final spoken = _britishLetterNames[normalized] ?? normalized;
+    await _tts.setSpeechRate(0.40);
+    await _tts.speak(spoken);
+  }
+
+  Future<void> playPhonemeAsset(String assetPath) async {
+    await _playAsset(assetPath);
+  }
+
+  Future<void> playPhonemeUrl(String source) async {
+    if (source.startsWith('http://') || source.startsWith('https://')) {
+      await _tts.stop();
+      await _player.stop();
+      await _player.play(UrlSource(source));
+      return;
+    }
+    await _playAsset(source);
+  }
+
+  Future<void> playPhonemeUrls(List<String> sources) async {
+    await _tts.stop();
+    await _player.stop();
+    for (final source in sources) {
+      if (source.startsWith('http://') || source.startsWith('https://')) {
+        await _player.play(UrlSource(source));
+      } else {
+        final normalized = source.startsWith('assets/')
+            ? source.substring('assets/'.length)
+            : source;
+        await _player.play(AssetSource(normalized));
+      }
       await _player.onPlayerComplete.first;
     }
   }
