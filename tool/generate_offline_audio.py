@@ -11,6 +11,8 @@ from __future__ import annotations
 import asyncio
 import os
 import re
+import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -25,9 +27,35 @@ PHONICS_REMOTE_BASE = (
     "https://raw.githubusercontent.com/minormending/learn-letters/main/audio"
 )
 
-# Local logical name -> filename in the phonics source repository.
+# Local logical name -> real filename in the phonics source repository.
+# The source intentionally has no k.mp3, q.mp3 or x.mp3. In the app:
+#   K uses the same /k/ recording as C;
+#   Q is built from /k/ + /w/;
+#   X is built from /k/ + /s/.
 PHONEMES = {
-    **{letter: f"{letter}.mp3" for letter in "abcdefghijklmnopqrstuvwxyz"},
+    "a": "a.mp3",
+    "b": "b.mp3",
+    "c": "c.mp3",
+    "d": "d.mp3",
+    "e": "e.mp3",
+    "f": "f.mp3",
+    "g": "g.mp3",
+    "h": "h.mp3",
+    "i": "i.mp3",
+    "j": "j.mp3",
+    "l": "l.mp3",
+    "m": "m.mp3",
+    "n": "n.mp3",
+    "o": "o.mp3",
+    "p": "p.mp3",
+    "r": "r.mp3",
+    "s": "s.mp3",
+    "t": "t.mp3",
+    "u": "u.mp3",
+    "v": "v.mp3",
+    "w": "w.mp3",
+    "y": "y.mp3",
+    "z": "z.mp3",
     "sh": "sh.mp3",
     "ch": "ch-chair.mp3",
     "th_thing": "th-thing.mp3",
@@ -84,13 +112,26 @@ def collect_words() -> list[str]:
     return sorted(words)
 
 
+def download_with_retries(url: str, target: Path, attempts: int = 3) -> None:
+    last_error: Exception | None = None
+    for attempt in range(1, attempts + 1):
+        try:
+            urllib.request.urlretrieve(url, target)
+            return
+        except (urllib.error.URLError, urllib.error.HTTPError) as exc:
+            last_error = exc
+            if attempt < attempts:
+                time.sleep(attempt * 2)
+    raise RuntimeError(f"Failed to download {url}") from last_error
+
+
 def download_phonemes() -> None:
     AUDIO_DIR.mkdir(parents=True, exist_ok=True)
     for logical_name, remote_name in PHONEMES.items():
         target = AUDIO_DIR / f"phoneme_{logical_name}.mp3"
         url = f"{PHONICS_REMOTE_BASE}/{remote_name}"
         print(f"phoneme {logical_name}: {url}")
-        urllib.request.urlretrieve(url, target)
+        download_with_retries(url, target)
 
 
 async def render(text: str, target: Path, rate: str) -> None:
