@@ -6,6 +6,10 @@ class LessonAudioService {
   final AudioPlayer _player = AudioPlayer();
   bool _configured = false;
 
+  // Локальные фрагменты, подготовленные из официального аудиоприложения
+  // Spotlight 2 (часть 1), всегда имеют наивысший приоритет.
+  static const String _spotlightAudioDir = 'audio/spotlight2_part1';
+
   static const Map<String, String> _britishLetterNames = {
     'A': 'ay',
     'B': 'bee',
@@ -51,6 +55,11 @@ class LessonAudioService {
         .replaceAll(RegExp(r'^_+|_+$'), '');
   }
 
+  String _fileName(String assetPath) {
+    final normalized = assetPath.replaceAll('\\', '/');
+    return normalized.split('/').last;
+  }
+
   Future<void> _playAsset(String assetPath) async {
     await _tts.stop();
     await _player.stop();
@@ -60,15 +69,25 @@ class LessonAudioService {
     await _player.play(AssetSource(normalized));
   }
 
-  Future<void> speakWord(String word) async {
-    final asset = 'audio/word_${_safeName(word)}.mp3';
+  Future<bool> _tryPlayAsset(String assetPath) async {
     try {
-      await _playAsset(asset);
-      return;
+      await _playAsset(assetPath);
+      return true;
     } catch (_) {
-      // В режиме разработки без сгенерированных assets остаётся запасной TTS.
+      return false;
     }
+  }
 
+  Future<void> speakWord(String word) async {
+    final fileName = 'word_${_safeName(word)}.mp3';
+
+    // 1. Эталон: официальный Spotlight 2.
+    if (await _tryPlayAsset('$_spotlightAudioDir/$fileName')) return;
+
+    // 2. Резервный локальный файл, например созданный для тестовой APK-сборки.
+    if (await _tryPlayAsset('audio/$fileName')) return;
+
+    // 3. Последний резерв только для разработки.
     await _configureTts();
     await _tts.stop();
     await _player.stop();
@@ -78,13 +97,15 @@ class LessonAudioService {
 
   Future<void> speakLetterName(String letter) async {
     final normalized = letter.trim().toUpperCase();
-    try {
-      await _playAsset('audio/letter_$normalized.mp3');
-      return;
-    } catch (_) {
-      // Запасной вариант только для разработки.
-    }
+    final fileName = 'letter_$normalized.mp3';
 
+    // 1. Эталон: официальный Spotlight 2.
+    if (await _tryPlayAsset('$_spotlightAudioDir/$fileName')) return;
+
+    // 2. Резервный локальный файл.
+    if (await _tryPlayAsset('audio/$fileName')) return;
+
+    // 3. Последний резерв только для разработки.
     await _configureTts();
     await _tts.stop();
     await _player.stop();
@@ -94,6 +115,10 @@ class LessonAudioService {
   }
 
   Future<void> playPhonemeAsset(String assetPath) async {
+    // Если для фонемы подготовлен официальный фрагмент Spotlight,
+    // он автоматически заменяет старый фонетический файл.
+    final official = '$_spotlightAudioDir/${_fileName(assetPath)}';
+    if (await _tryPlayAsset(official)) return;
     await _playAsset(assetPath);
   }
 
@@ -104,7 +129,7 @@ class LessonAudioService {
       await _player.play(UrlSource(source));
       return;
     }
-    await _playAsset(source);
+    await playPhonemeAsset(source);
   }
 
   Future<void> playPhonemeUrls(List<String> sources) async {
@@ -114,13 +139,20 @@ class LessonAudioService {
       if (source.startsWith('http://') || source.startsWith('https://')) {
         await _player.play(UrlSource(source));
       } else {
-        final normalized = source.startsWith('assets/')
-            ? source.substring('assets/'.length)
-            : source;
-        await _player.play(AssetSource(normalized));
+        final official = '$_spotlightAudioDir/${_fileName(source)}';
+        if (!await _tryPlayAsset(official)) {
+          final normalized = source.startsWith('assets/')
+              ? source.substring('assets/'.length)
+              : source;
+          await _player.play(AssetSource(normalized));
+        }
       }
       await _player.onPlayerComplete.first;
     }
+  }
+
+  Future<void> playSpotlightClip(String fileName) async {
+    await _playAsset('$_spotlightAudioDir/$fileName');
   }
 
   Future<void> dispose() async {
