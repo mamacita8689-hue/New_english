@@ -8,6 +8,7 @@ on:
       - 'assets/**'
       - 'pubspec.yaml'
       - 'tool/prepare_android.py'
+      - 'tool/generate_offline_audio.py'
       - '.github/workflows/build-android.yml'
   workflow_dispatch:
 
@@ -25,6 +26,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -39,6 +45,19 @@ jobs:
 
       - name: Prepare Android manifest
         run: python3 tool/prepare_android.py
+
+      - name: Generate offline British audio
+        run: |
+          python -m pip install --upgrade pip
+          pip install edge-tts==7.2.3
+          python tool/generate_offline_audio.py
+
+      - name: Verify bundled audio
+        run: |
+          test -f assets/audio/letter_Y.mp3
+          test -f assets/audio/word_queen.mp3
+          test -f assets/audio/phoneme_sh.mp3
+          echo "Bundled audio files: $(find assets/audio -name '*.mp3' | wc -l)"
 
       - name: Install dependencies
         run: flutter pub get
