@@ -1,7 +1,6 @@
 import '../models/lesson.dart';
 
-const _phonicsBase =
-    'https://raw.githubusercontent.com/minormending/learn-letters/main/audio';
+const _audio = 'audio';
 const _audioCredit = 'UK phonics-аудионабор — minormending/learn-letters';
 
 const shLesson = SoundLesson(
@@ -11,7 +10,7 @@ const shLesson = SoundLesson(
   phoneme: '/ʃ/',
   explanation:
       'Буквы S и H вместе часто дают один звук. Послушай примеры и запомни сочетание SH.',
-  phonemeAudioUrl: '$_phonicsBase/sh.mp3',
+  phonemeAudioUrl: '$_audio/phoneme_sh.mp3',
   audioCredit: _audioCredit,
   examples: [
     ExampleWord(word: 'ship', emoji: '🚢'),
@@ -39,7 +38,7 @@ const chLesson = SoundLesson(
   phoneme: '/tʃ/',
   explanation:
       'Буквы C и H вместе часто дают звук /tʃ/. Послушай слова и найди сочетание CH.',
-  phonemeAudioUrl: '$_phonicsBase/ch-chair.mp3',
+  phonemeAudioUrl: '$_audio/phoneme_ch.mp3',
   audioCredit: _audioCredit,
   examples: [
     ExampleWord(word: 'chair', emoji: '🪑'),
@@ -67,7 +66,7 @@ const thVoicelessLesson = SoundLesson(
   phoneme: '/θ/',
   explanation:
       'В некоторых словах TH произносится без голоса: /θ/. Кончик языка слегка находится между зубами.',
-  phonemeAudioUrl: '$_phonicsBase/th-thing.mp3',
+  phonemeAudioUrl: '$_audio/phoneme_th_thing.mp3',
   audioCredit: _audioCredit,
   examples: [
     ExampleWord(word: 'three', emoji: '3️⃣'),
@@ -95,7 +94,7 @@ const thVoicedLesson = SoundLesson(
   phoneme: '/ð/',
   explanation:
       'В других словах TH произносится с голосом: /ð/. Положение языка похоже на /θ/, но голосовые связки работают.',
-  phonemeAudioUrl: '$_phonicsBase/th-that.mp3',
+  phonemeAudioUrl: '$_audio/phoneme_th_that.mp3',
   audioCredit: _audioCredit,
   examples: [
     ExampleWord(word: 'this', emoji: '👉'),
@@ -123,7 +122,7 @@ const ngLesson = SoundLesson(
   phoneme: '/ŋ/',
   explanation:
       'Сочетание NG часто даёт носовой звук /ŋ/. Язык не касается передних зубов — звук получается глубже.',
-  phonemeAudioUrl: '$_phonicsBase/ng.mp3',
+  phonemeAudioUrl: '$_audio/phoneme_ng.mp3',
   audioCredit: _audioCredit,
   examples: [
     ExampleWord(word: 'sing', emoji: '🎵'),
@@ -151,7 +150,7 @@ const eeLesson = SoundLesson(
   phoneme: '/iː/',
   explanation:
       'Две буквы E вместе часто дают долгий звук /iː/. Улыбнись немного и протяни звук.',
-  phonemeAudioUrl: '$_phonicsBase/ee.mp3',
+  phonemeAudioUrl: '$_audio/phoneme_ee.mp3',
   audioCredit: _audioCredit,
   examples: [
     ExampleWord(word: 'see', emoji: '👀'),
@@ -179,7 +178,7 @@ const ooLongLesson = SoundLesson(
   phoneme: '/uː/',
   explanation:
       'В словах вроде moon сочетание OO даёт долгий звук /uː/. Этот звук можно немного протянуть.',
-  phonemeAudioUrl: '$_phonicsBase/oo-moon.mp3',
+  phonemeAudioUrl: '$_audio/phoneme_oo_moon.mp3',
   audioCredit: _audioCredit,
   examples: [
     ExampleWord(word: 'moon', emoji: '🌙'),
@@ -207,7 +206,7 @@ const ooShortLesson = SoundLesson(
   phoneme: '/ʊ/',
   explanation:
       'Но OO бывает и коротким: в слове book оно звучит /ʊ/. Это отдельный вариант, его важно слышать.',
-  phonemeAudioUrl: '$_phonicsBase/oo-book.mp3',
+  phonemeAudioUrl: '$_audio/phoneme_oo_book.mp3',
   audioCredit: _audioCredit,
   examples: [
     ExampleWord(word: 'book', emoji: '📖'),
@@ -235,7 +234,7 @@ const aiLesson = SoundLesson(
   phoneme: '/eɪ/',
   explanation:
       'Сочетание AI часто даёт звук /eɪ/, как в слове rain. Услышь плавный переход внутри звука.',
-  phonemeAudioUrl: '$_phonicsBase/ai.mp3',
+  phonemeAudioUrl: '$_audio/phoneme_ai.mp3',
   audioCredit: _audioCredit,
   examples: [
     ExampleWord(word: 'rain', emoji: '🌧️'),
@@ -263,7 +262,7 @@ const oaLesson = SoundLesson(
   phoneme: '/əʊ/',
   explanation:
       'Сочетание OA часто даёт британский звук /əʊ/, как в слове boat.',
-  phonemeAudioUrl: '$_phonicsBase/oa.mp3',
+  phonemeAudioUrl: '$_audio/phoneme_oa.mp3',
   audioCredit: _audioCredit,
   examples: [
     ExampleWord(word: 'boat', emoji: '⛵'),
