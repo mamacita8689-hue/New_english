@@ -1,48 +1,49 @@
 import '../models/lesson.dart';
 
 const _audio = 'audio';
-const _audioCredit = 'UK phonics-аудионабор — minormending/learn-letters';
+const _spotlightAudio = 'audio/spotlight2_part1';
+const _audioCredit = 'Spotlight 2, часть 1 — официальное аудиоприложение «Просвещение»';
+const _fallbackCredit = 'UK phonics-аудионабор — minormending/learn-letters';
 
 const shLesson = SoundLesson(
   id: 'sh',
-  title: 'Урок 1',
+  title: 'Letter Blends • стр. 12',
   grapheme: 'SH',
   phoneme: '/ʃ/',
   explanation:
-      'Буквы S и H вместе часто дают один звук. Послушай примеры и запомни сочетание SH.',
-  phonemeAudioUrl: '$_audio/phoneme_sh.mp3',
+      'В Spotlight 2 сочетание SH учим по словам sheep, fish и ship. Послушай официальный образец и повтори.',
+  phonemeAudioUrl: '$_spotlightAudio/phoneme_sh.mp3',
   audioCredit: _audioCredit,
   examples: [
-    ExampleWord(word: 'ship', emoji: '🚢'),
+    ExampleWord(word: 'sheep', emoji: '🐑'),
     ExampleWord(word: 'fish', emoji: '🐟'),
-    ExampleWord(word: 'shop', emoji: '🏪'),
+    ExampleWord(word: 'ship', emoji: '🚢'),
   ],
   quiz: [
     QuizQuestion(
-      question: 'Какое сочетание букв мы изучаем?',
+      question: 'Какое сочетание даёт звук /ʃ/?',
       options: ['CH', 'SH', 'TH'],
       correctIndex: 1,
     ),
     QuizQuestion(
-      question: 'В каком слове есть SH?',
-      options: ['cat', 'ship', 'dog'],
-      correctIndex: 1,
+      question: 'Какое слово есть в упражнении Spotlight на SH?',
+      options: ['sheep', 'chick', 'thumb'],
+      correctIndex: 0,
     ),
   ],
 );
 
 const chLesson = SoundLesson(
   id: 'ch',
-  title: 'Урок 2',
+  title: 'Letter Blends • стр. 13',
   grapheme: 'CH',
   phoneme: '/tʃ/',
   explanation:
-      'Буквы C и H вместе часто дают звук /tʃ/. Послушай слова и найди сочетание CH.',
-  phonemeAudioUrl: '$_audio/phoneme_ch.mp3',
+      'В Spotlight 2 сочетание CH закрепляется словами chick и cheese. Слушай официальный образец и повторяй.',
+  phonemeAudioUrl: '$_spotlightAudio/phoneme_ch.mp3',
   audioCredit: _audioCredit,
   examples: [
-    ExampleWord(word: 'chair', emoji: '🪑'),
-    ExampleWord(word: 'chicken', emoji: '🐔'),
+    ExampleWord(word: 'chick', emoji: '🐥'),
     ExampleWord(word: 'cheese', emoji: '🧀'),
   ],
   quiz: [
@@ -52,36 +53,35 @@ const chLesson = SoundLesson(
       correctIndex: 1,
     ),
     QuizQuestion(
-      question: 'В каком слове есть CH?',
-      options: ['chair', 'ship', 'three'],
-      correctIndex: 0,
+      question: 'Какое слово есть в упражнении Spotlight на CH?',
+      options: ['ship', 'chick', 'thumb'],
+      correctIndex: 1,
     ),
   ],
 );
 
 const thVoicelessLesson = SoundLesson(
   id: 'th_voiceless',
-  title: 'Урок 3',
+  title: 'Letter Blends • стр. 14',
   grapheme: 'TH',
   phoneme: '/θ/',
   explanation:
-      'В некоторых словах TH произносится без голоса: /θ/. Кончик языка слегка находится между зубами.',
-  phonemeAudioUrl: '$_audio/phoneme_th_thing.mp3',
+      'В словах thumb и thimble сочетание TH произносится без голоса: /θ/. Кончик языка слегка между зубами.',
+  phonemeAudioUrl: '$_spotlightAudio/word_thumb.mp3',
   audioCredit: _audioCredit,
   examples: [
-    ExampleWord(word: 'three', emoji: '3️⃣'),
-    ExampleWord(word: 'think', emoji: '💭'),
-    ExampleWord(word: 'bath', emoji: '🛁'),
+    ExampleWord(word: 'thumb', emoji: '👍'),
+    ExampleWord(word: 'thimble', emoji: '🧵'),
   ],
   quiz: [
     QuizQuestion(
-      question: 'Какой звук изучаем в этом уроке?',
+      question: 'Какой звук TH слышен в слове thumb?',
       options: ['/ʃ/', '/θ/', '/tʃ/'],
       correctIndex: 1,
     ),
     QuizQuestion(
-      question: 'В каком слове TH произносится как /θ/?',
-      options: ['three', 'ship', 'chair'],
+      question: 'Какое слово есть в Spotlight на глухой TH?',
+      options: ['thumb', 'cheese', 'ship'],
       correctIndex: 0,
     ),
   ],
@@ -89,41 +89,68 @@ const thVoicelessLesson = SoundLesson(
 
 const thVoicedLesson = SoundLesson(
   id: 'th_voiced',
-  title: 'Урок 4',
+  title: 'Letter Blends • стр. 14',
   grapheme: 'TH',
   phoneme: '/ð/',
   explanation:
-      'В других словах TH произносится с голосом: /ð/. Положение языка похоже на /θ/, но голосовые связки работают.',
-  phonemeAudioUrl: '$_audio/phoneme_th_that.mp3',
+      'В словах the и this сочетание TH произносится с голосом: /ð/. Положение языка такое же, но голосовые связки работают.',
+  phonemeAudioUrl: '$_spotlightAudio/word_this.mp3',
   audioCredit: _audioCredit,
   examples: [
+    ExampleWord(word: 'the', emoji: '🔤'),
     ExampleWord(word: 'this', emoji: '👉'),
-    ExampleWord(word: 'mother', emoji: '👩'),
-    ExampleWord(word: 'father', emoji: '👨'),
   ],
   quiz: [
     QuizQuestion(
-      question: 'Какой звук изучаем в этом уроке?',
+      question: 'Какой звук TH слышен в слове this?',
       options: ['/ð/', '/θ/', '/ʃ/'],
       correctIndex: 0,
     ),
     QuizQuestion(
-      question: 'В каком слове TH произносится как /ð/?',
-      options: ['three', 'this', 'chair'],
+      question: 'Какое слово из Spotlight содержит звонкий TH?',
+      options: ['thumb', 'this', 'fish'],
       correctIndex: 1,
+    ),
+  ],
+);
+
+const phLesson = SoundLesson(
+  id: 'ph',
+  title: 'Letter Blends • стр. 15',
+  grapheme: 'PH',
+  phoneme: '/f/',
+  explanation:
+      'В Spotlight 2 сочетание PH встречается в словах photo, dolphin и elephant и звучит как /f/.',
+  phonemeAudioUrl: '$_spotlightAudio/word_photo.mp3',
+  audioCredit: _audioCredit,
+  examples: [
+    ExampleWord(word: 'photo', emoji: '📷'),
+    ExampleWord(word: 'dolphin', emoji: '🐬'),
+    ExampleWord(word: 'elephant', emoji: '🐘'),
+  ],
+  quiz: [
+    QuizQuestion(
+      question: 'Как звучит PH в слове photo?',
+      options: ['/f/', '/p/', '/h/'],
+      correctIndex: 0,
+    ),
+    QuizQuestion(
+      question: 'В каком слове есть PH?',
+      options: ['dolphin', 'ship', 'chick'],
+      correctIndex: 0,
     ),
   ],
 );
 
 const ngLesson = SoundLesson(
   id: 'ng',
-  title: 'Урок 5',
+  title: 'Дополнительный урок',
   grapheme: 'NG',
   phoneme: '/ŋ/',
   explanation:
       'Сочетание NG часто даёт носовой звук /ŋ/. Язык не касается передних зубов — звук получается глубже.',
   phonemeAudioUrl: '$_audio/phoneme_ng.mp3',
-  audioCredit: _audioCredit,
+  audioCredit: _fallbackCredit,
   examples: [
     ExampleWord(word: 'sing', emoji: '🎵'),
     ExampleWord(word: 'ring', emoji: '💍'),
@@ -145,13 +172,13 @@ const ngLesson = SoundLesson(
 
 const eeLesson = SoundLesson(
   id: 'ee',
-  title: 'Урок 6',
+  title: 'Дополнительный урок',
   grapheme: 'EE',
   phoneme: '/iː/',
   explanation:
       'Две буквы E вместе часто дают долгий звук /iː/. Улыбнись немного и протяни звук.',
   phonemeAudioUrl: '$_audio/phoneme_ee.mp3',
-  audioCredit: _audioCredit,
+  audioCredit: _fallbackCredit,
   examples: [
     ExampleWord(word: 'see', emoji: '👀'),
     ExampleWord(word: 'green', emoji: '🟢'),
@@ -173,13 +200,13 @@ const eeLesson = SoundLesson(
 
 const ooLongLesson = SoundLesson(
   id: 'oo_long',
-  title: 'Урок 7',
+  title: 'Дополнительный урок',
   grapheme: 'OO',
   phoneme: '/uː/',
   explanation:
       'В словах вроде moon сочетание OO даёт долгий звук /uː/. Этот звук можно немного протянуть.',
   phonemeAudioUrl: '$_audio/phoneme_oo_moon.mp3',
-  audioCredit: _audioCredit,
+  audioCredit: _fallbackCredit,
   examples: [
     ExampleWord(word: 'moon', emoji: '🌙'),
     ExampleWord(word: 'food', emoji: '🍲'),
@@ -201,13 +228,13 @@ const ooLongLesson = SoundLesson(
 
 const ooShortLesson = SoundLesson(
   id: 'oo_short',
-  title: 'Урок 8',
+  title: 'Дополнительный урок',
   grapheme: 'OO',
   phoneme: '/ʊ/',
   explanation:
       'Но OO бывает и коротким: в слове book оно звучит /ʊ/. Это отдельный вариант, его важно слышать.',
   phonemeAudioUrl: '$_audio/phoneme_oo_book.mp3',
-  audioCredit: _audioCredit,
+  audioCredit: _fallbackCredit,
   examples: [
     ExampleWord(word: 'book', emoji: '📖'),
     ExampleWord(word: 'look', emoji: '👀'),
@@ -229,13 +256,13 @@ const ooShortLesson = SoundLesson(
 
 const aiLesson = SoundLesson(
   id: 'ai',
-  title: 'Урок 9',
+  title: 'Дополнительный урок',
   grapheme: 'AI',
   phoneme: '/eɪ/',
   explanation:
       'Сочетание AI часто даёт звук /eɪ/, как в слове rain. Услышь плавный переход внутри звука.',
   phonemeAudioUrl: '$_audio/phoneme_ai.mp3',
-  audioCredit: _audioCredit,
+  audioCredit: _fallbackCredit,
   examples: [
     ExampleWord(word: 'rain', emoji: '🌧️'),
     ExampleWord(word: 'train', emoji: '🚆'),
@@ -257,13 +284,13 @@ const aiLesson = SoundLesson(
 
 const oaLesson = SoundLesson(
   id: 'oa',
-  title: 'Урок 10',
+  title: 'Дополнительный урок',
   grapheme: 'OA',
   phoneme: '/əʊ/',
   explanation:
       'Сочетание OA часто даёт британский звук /əʊ/, как в слове boat.',
   phonemeAudioUrl: '$_audio/phoneme_oa.mp3',
-  audioCredit: _audioCredit,
+  audioCredit: _fallbackCredit,
   examples: [
     ExampleWord(word: 'boat', emoji: '⛵'),
     ExampleWord(word: 'coat', emoji: '🧥'),
@@ -288,6 +315,7 @@ const soundLessons = [
   chLesson,
   thVoicelessLesson,
   thVoicedLesson,
+  phLesson,
   ngLesson,
   eeLesson,
   ooLongLesson,
