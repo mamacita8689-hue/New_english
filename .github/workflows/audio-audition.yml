@@ -1,0 +1,36 @@
+name: Build pronunciation audition pack
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tool/make_audio_audition.py'
+      - '.github/workflows/audio-audition.yml'
+  workflow_dispatch:
+
+jobs:
+  build-audio-pack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install edge-tts
+        run: pip install edge-tts
+
+      - name: Generate audition audio
+        run: python tool/make_audio_audition.py
+
+      - name: Upload audition pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: pronunciation-audition-pack
+          path: audio_audition/
+          if-no-files-found: error
+          retention-days: 14
