@@ -52,9 +52,7 @@ class _LessonScreenState extends State<LessonScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Не удалось загрузить звук. Проверь подключение к интернету.'),
-          ),
+          const SnackBar(content: Text('Не удалось воспроизвести звук.')),
         );
       }
     } finally {
@@ -145,7 +143,7 @@ class _LessonScreenState extends State<LessonScreen> {
             if (lesson.audioCredit != null) ...[
               const SizedBox(height: 8),
               Text(
-                'Аудио фонемы: ${lesson.audioCredit}',
+                'Аудио: ${lesson.audioCredit}',
                 style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               ),
             ],

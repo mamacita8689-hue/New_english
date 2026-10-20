@@ -27,10 +27,7 @@ class _PracticeQuestion {
   final SoundLesson target;
   final List<SoundLesson> options;
 
-  const _PracticeQuestion({
-    required this.target,
-    required this.options,
-  });
+  const _PracticeQuestion({required this.target, required this.options});
 }
 
 class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
@@ -71,16 +68,23 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
 
       final options = <SoundLesson>[target, ...distractors.take(2)]
         ..shuffle(_random);
-
       return _PracticeQuestion(target: target, options: options);
     }).toList();
   }
 
-  Future<void> _playSound(SoundLesson lesson) async {
-    if (_playing || lesson.phonemeAudioUrl == null) return;
+  Future<void> _playPhoneme(SoundLesson lesson) async {
+    if (_playing) return;
+    final asset = lesson.phonemeAudioAsset;
+    final url = lesson.phonemeAudioUrl;
+    if (asset == null && url == null) return;
+
     setState(() => _playing = true);
     try {
-      await _audio.playPhonemeUrl(lesson.phonemeAudioUrl!);
+      if (asset != null) {
+        await _audio.playPhonemeAsset(asset);
+      } else {
+        await _audio.playPhonemeUrl(url!);
+      }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -94,19 +98,17 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
 
   void _choose(SoundLesson option) {
     if (_answered) return;
-
     if (option.id == _question.target.id) {
       setState(() {
         _answered = true;
         if (!_mistake) _firstTryScore++;
       });
-      return;
+    } else {
+      setState(() {
+        _mistake = true;
+        _wrongIds.add(option.id);
+      });
     }
-
-    setState(() {
-      _mistake = true;
-      _wrongIds.add(option.id);
-    });
   }
 
   void _next() {
@@ -114,7 +116,6 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
       setState(() => _finished = true);
       return;
     }
-
     setState(() {
       _index++;
       _answered = false;
@@ -144,7 +145,6 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
   @override
   Widget build(BuildContext context) {
     if (_finished) return _buildResult();
-
     final listenMode = widget.mode == SoundPracticeMode.hearAndChooseGrapheme;
 
     return Scaffold(
@@ -191,9 +191,7 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
                           FilledButton(
                             onPressed: _next,
                             child: Text(
-                              _index == _questions.length - 1
-                                  ? 'Результат'
-                                  : 'Следующее',
+                              _index == _questions.length - 1 ? 'Результат' : 'Следующее',
                             ),
                           ),
                         ],
@@ -203,9 +201,7 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
                             key: const ValueKey('retry'),
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .secondaryContainer,
+                              color: Theme.of(context).colorScheme.secondaryContainer,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: const Text(
@@ -236,7 +232,7 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
           style: FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
           ),
-          onPressed: _playing ? null : () => _playSound(_question.target),
+          onPressed: _playing ? null : () => _playPhoneme(_question.target),
           icon: Icon(_playing ? Icons.hourglass_top : Icons.volume_up_rounded),
           label: Text(
             _playing ? 'Слушаем…' : 'Послушать звук',
@@ -270,7 +266,7 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
             style: const TextStyle(fontSize: 56, fontWeight: FontWeight.w900),
           ),
         ),
-        if (target.grapheme == 'TH' || target.grapheme == 'OO') ...[
+        if (target.grapheme == 'TH') ...[
           const SizedBox(height: 12),
           Text(
             'Подсказка: ${target.examples.first.word}',
@@ -286,7 +282,7 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
       children: _question.options.map((option) {
         final wrong = _wrongIds.contains(option.id);
         final correct = _answered && option.id == _question.target.id;
-        final label = (option.grapheme == 'TH' || option.grapheme == 'OO')
+        final label = option.grapheme == 'TH'
             ? '${option.grapheme}\n${option.examples.first.word}'
             : option.grapheme;
 
@@ -343,7 +339,8 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
               child: Row(
                 children: [
                   IconButton.filledTonal(
-                    onPressed: _playing ? null : () => _playSound(option),
+                    tooltip: 'Послушать ${option.phoneme}',
+                    onPressed: _playing ? null : () => _playPhoneme(option),
                     icon: const Icon(Icons.volume_up_rounded),
                   ),
                   const SizedBox(width: 12),
@@ -380,10 +377,7 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  _firstTryScore >= 8 ? '🌟' : '👏',
-                  style: const TextStyle(fontSize: 76),
-                ),
+                Text(_firstTryScore >= 4 ? '🌟' : '👏', style: const TextStyle(fontSize: 76)),
                 const SizedBox(height: 18),
                 const Text(
                   'Тренировка закончена!',

@@ -127,7 +127,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'SH, CH, TH, NG, EE, OO, AI, OA',
+                      'Spotlight 2, стр. 12–15: SH, CH, TH, PH',
                       style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
                     ),
                     const SizedBox(height: 14),
@@ -142,7 +142,7 @@ class HomeScreen extends StatelessWidget {
                         );
                       },
                       icon: const Icon(Icons.hearing_rounded),
-                      label: const Text('Услышь звук → выбери сочетание'),
+                      label: const Text('Послушай слово → выбери сочетание'),
                     ),
                     const SizedBox(height: 10),
                     FilledButton.tonalIcon(
@@ -167,16 +167,11 @@ class HomeScreen extends StatelessWidget {
               final index = entry.key;
               final lesson = entry.value;
               final emoji = switch (lesson.id) {
-                'sh' => '🚢',
-                'ch' => '🪑',
-                'th_voiceless' => '3️⃣',
+                'sh' => '🐑',
+                'ch' => '🐥',
+                'th_voiceless' => '👍',
                 'th_voiced' => '👉',
-                'ng' => '🎵',
-                'ee' => '👀',
-                'oo_long' => '🌙',
-                'oo_short' => '📖',
-                'ai' => '🌧️',
-                'oa' => '⛵',
+                'ph' => '📷',
                 _ => '🔤',
               };
 

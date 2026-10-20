@@ -1,10 +1,60 @@
-# Источники аудио фонем
+# Источники и роли аудио
 
-Для эталонного произношения отдельных звуков используются открытые фонетические записи Wikimedia Commons.
+В проекте используются три разных типа аудио. Их важно не смешивать.
 
-- `/ʃ/` — **Voiceless palato-alveolar sibilant.ogg**, Peter Isotalo. Лицензии: CC BY-SA 3.0 / GFDL. Страница источника: https://commons.wikimedia.org/wiki/File:Voiceless_palato-alveolar_sibilant.ogg
-- `/tʃ/` — **Voiceless palato-alveolar affricate.ogg**, Peter Isotalo. Лицензия: CC BY-SA 3.0. Страница источника: https://commons.wikimedia.org/wiki/File:Voiceless_palato-alveolar_affricate.ogg
-- `/θ/` — **Voiceless dental fricative.ogg**, Peter Isotalo. Лицензии: CC BY-SA 3.0 / GFDL. Страница источника: https://commons.wikimedia.org/wiki/File:Voiceless_dental_fricative.ogg
-- `/ð/` — **Voiced dental fricative.ogg**, Peter Isotalo. Лицензии: CC BY-SA 3.0 / GFDL. Страница источника: https://commons.wikimedia.org/wiki/File:Voiced_dental_fricative.ogg
+## 1. Spotlight 2 — слова и названия букв
 
-В текущем веб-прототипе приложение воспроизводит эти записи по сети через Wikimedia Commons. Для полноценного офлайн APK можно сохранить копии файлов в `assets/audio/`, сохранив эту атрибуцию и условия лицензий.
+Официальное аудиоприложение к **Spotlight 2, часть 1** используется как основной источник для:
+
+- `My Letters` — звуки букв и слова-примеры;
+- названий букв A–Z;
+- слов в уроках SH, CH и PH.
+
+Официальные файлы издательства не публикуются в GitHub. Они подготавливаются локально из архива `spotlight2_part1.zip`.
+
+## 2. Отдельные фонемы
+
+Для верхней кнопки «Послушать звук» используются отдельные локальные phonics-записи из:
+
+```text
+assets/audio/phonics_reference/
+```
+
+Текущий набор:
+
+- `phoneme_sh.mp3` → /ʃ/
+- `phoneme_ch.mp3` → /tʃ/
+- `phoneme_th_thing.mp3` → /θ/
+- `phoneme_th_that.mp3` → /ð/
+- `phoneme_f.mp3` → /f/
+
+Они подготавливаются скриптом:
+
+```bash
+python3 tool/prepare_phoneme_reference.py
+```
+
+Текущий скрипт загружает эти учебные фонетические файлы из открытого GitHub-репозитория `minormending/learn-letters` и сохраняет их локально в assets.
+
+## 3. TH words
+
+Слова:
+
+- `thumb`
+- `thimble`
+- `the`
+- `this`
+
+в текущей версии приложения не используют нарезанные фрагменты Spotlight. Все четыре произносятся через один выбранный `en-GB` TTS-голос.
+
+Это сделано после ручной проверки: короткие фрагменты страницы 14 несколько раз давали неверное соответствие подписи и звука. Текущий вариант делает поведение страницы TH предсказуемым.
+
+## Проверка
+
+После подготовки аудио запусти:
+
+```bash
+python3 tool/verify_spotlight_audio.py
+```
+
+Проверка контролирует наличие актуальных локальных файлов и отсутствие старых TH / Letter Blends клипов, которые могут случайно попасть в приложение.
