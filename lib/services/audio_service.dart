@@ -6,37 +6,23 @@ class LessonAudioService {
   final AudioPlayer _player = AudioPlayer();
   bool _configured = false;
 
-  // Официальное аудио Spotlight используется для слов и названий букв.
-  // Чистые фонемы хранятся отдельно и не должны подменяться файлами Spotlight.
   static const String _spotlightAudioDir = 'audio/spotlight2_part1';
 
+  // Эти слова были заново проверены по исходным дорожкам Spotlight и получили
+  // новые имена файлов, чтобы браузер не мог подхватить старые ошибочные MP3 из кэша.
+  static const Set<String> _blendWordsV2 = {
+    'sheep', 'fish', 'ship',
+    'chick', 'cheese',
+    'thumb', 'thimble', 'the', 'this',
+    'photo', 'dolphin', 'elephant',
+  };
+
   static const Map<String, String> _britishLetterNames = {
-    'A': 'ay',
-    'B': 'bee',
-    'C': 'see',
-    'D': 'dee',
-    'E': 'ee',
-    'F': 'ef',
-    'G': 'gee',
-    'H': 'aitch',
-    'I': 'eye',
-    'J': 'jay',
-    'K': 'kay',
-    'L': 'el',
-    'M': 'em',
-    'N': 'en',
-    'O': 'oh',
-    'P': 'pee',
-    'Q': 'cue',
-    'R': 'are',
-    'S': 'ess',
-    'T': 'tee',
-    'U': 'you',
-    'V': 'vee',
-    'W': 'double u',
-    'X': 'ex',
-    'Y': 'why',
-    'Z': 'zed',
+    'A': 'ay', 'B': 'bee', 'C': 'see', 'D': 'dee', 'E': 'ee', 'F': 'ef',
+    'G': 'gee', 'H': 'aitch', 'I': 'eye', 'J': 'jay', 'K': 'kay', 'L': 'el',
+    'M': 'em', 'N': 'en', 'O': 'oh', 'P': 'pee', 'Q': 'cue', 'R': 'are',
+    'S': 'ess', 'T': 'tee', 'U': 'you', 'V': 'vee', 'W': 'double u',
+    'X': 'ex', 'Y': 'why', 'Z': 'zed',
   };
 
   Future<void> _configureTts() async {
@@ -74,15 +60,20 @@ class LessonAudioService {
   }
 
   Future<void> speakWord(String word) async {
-    final fileName = 'word_${_safeName(word)}.mp3';
+    final safe = _safeName(word);
 
-    // 1. Эталон слов: официальный Spotlight 2.
-    if (await _tryPlayAsset('$_spotlightAudioDir/$fileName')) return;
+    // Для Letter Blends используем только повторно проверенные cache-safe v2 файлы.
+    if (_blendWordsV2.contains(safe)) {
+      if (await _tryPlayAsset('$_spotlightAudioDir/word_${safe}_v2.mp3')) return;
+    } else {
+      // Для My Letters используем проверенные официальные фрагменты.
+      if (await _tryPlayAsset('$_spotlightAudioDir/word_$safe.mp3')) return;
+    }
 
-    // 2. Резервный локальный файл.
-    if (await _tryPlayAsset('audio/$fileName')) return;
+    // Резервный локальный файл.
+    if (await _tryPlayAsset('audio/word_$safe.mp3')) return;
 
-    // 3. Последний резерв только для разработки.
+    // Последний резерв только для разработки.
     await _configureTts();
     await _tts.stop();
     await _player.stop();
@@ -94,13 +85,9 @@ class LessonAudioService {
     final normalized = letter.trim().toUpperCase();
     final fileName = 'letter_$normalized.mp3';
 
-    // 1. Эталон названий букв: официальный Spotlight 2.
     if (await _tryPlayAsset('$_spotlightAudioDir/$fileName')) return;
-
-    // 2. Резервный локальный файл.
     if (await _tryPlayAsset('audio/$fileName')) return;
 
-    // 3. Последний резерв только для разработки.
     await _configureTts();
     await _tts.stop();
     await _player.stop();
@@ -110,8 +97,7 @@ class LessonAudioService {
   }
 
   Future<void> playPhonemeAsset(String assetPath) async {
-    // ВАЖНО: проигрываем именно указанный файл фонемы.
-    // Никакой автоматической подмены одноимённым файлом из Spotlight здесь нет.
+    // Фонема должна проигрываться строго из указанного источника.
     await _playAsset(assetPath);
   }
 
