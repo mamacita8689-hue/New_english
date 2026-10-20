@@ -6,8 +6,8 @@ class LessonAudioService {
   final AudioPlayer _player = AudioPlayer();
   bool _configured = false;
 
-  // Локальные фрагменты, подготовленные из официального аудиоприложения
-  // Spotlight 2 (часть 1), всегда имеют наивысший приоритет.
+  // Официальное аудио Spotlight используется для слов и названий букв.
+  // Чистые фонемы хранятся отдельно и не должны подменяться файлами Spotlight.
   static const String _spotlightAudioDir = 'audio/spotlight2_part1';
 
   static const Map<String, String> _britishLetterNames = {
@@ -55,11 +55,6 @@ class LessonAudioService {
         .replaceAll(RegExp(r'^_+|_+$'), '');
   }
 
-  String _fileName(String assetPath) {
-    final normalized = assetPath.replaceAll('\\', '/');
-    return normalized.split('/').last;
-  }
-
   Future<void> _playAsset(String assetPath) async {
     await _tts.stop();
     await _player.stop();
@@ -81,10 +76,10 @@ class LessonAudioService {
   Future<void> speakWord(String word) async {
     final fileName = 'word_${_safeName(word)}.mp3';
 
-    // 1. Эталон: официальный Spotlight 2.
+    // 1. Эталон слов: официальный Spotlight 2.
     if (await _tryPlayAsset('$_spotlightAudioDir/$fileName')) return;
 
-    // 2. Резервный локальный файл, например созданный для тестовой APK-сборки.
+    // 2. Резервный локальный файл.
     if (await _tryPlayAsset('audio/$fileName')) return;
 
     // 3. Последний резерв только для разработки.
@@ -99,7 +94,7 @@ class LessonAudioService {
     final normalized = letter.trim().toUpperCase();
     final fileName = 'letter_$normalized.mp3';
 
-    // 1. Эталон: официальный Spotlight 2.
+    // 1. Эталон названий букв: официальный Spotlight 2.
     if (await _tryPlayAsset('$_spotlightAudioDir/$fileName')) return;
 
     // 2. Резервный локальный файл.
@@ -115,10 +110,8 @@ class LessonAudioService {
   }
 
   Future<void> playPhonemeAsset(String assetPath) async {
-    // Если для фонемы подготовлен официальный фрагмент Spotlight,
-    // он автоматически заменяет старый фонетический файл.
-    final official = '$_spotlightAudioDir/${_fileName(assetPath)}';
-    if (await _tryPlayAsset(official)) return;
+    // ВАЖНО: проигрываем именно указанный файл фонемы.
+    // Никакой автоматической подмены одноимённым файлом из Spotlight здесь нет.
     await _playAsset(assetPath);
   }
 
@@ -139,13 +132,10 @@ class LessonAudioService {
       if (source.startsWith('http://') || source.startsWith('https://')) {
         await _player.play(UrlSource(source));
       } else {
-        final official = '$_spotlightAudioDir/${_fileName(source)}';
-        if (!await _tryPlayAsset(official)) {
-          final normalized = source.startsWith('assets/')
-              ? source.substring('assets/'.length)
-              : source;
-          await _player.play(AssetSource(normalized));
-        }
+        final normalized = source.startsWith('assets/')
+            ? source.substring('assets/'.length)
+            : source;
+        await _player.play(AssetSource(normalized));
       }
       await _player.onPlayerComplete.first;
     }
