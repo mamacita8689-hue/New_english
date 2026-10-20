@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
-"""Prepare verified Spotlight 2 Part 1 Letter Blends word clips locally.
+"""Prepare the Spotlight 2 Part 1 Letter Blends word clips currently used by the app.
 
 Usage:
     python3 tool/prepare_spotlight_letter_blends.py /path/to/official_part1.zip
 
-Verified source mapping:
-  p.12 Ex.1: sheep, fish, ship
-  p.13 Ex.3: chick, cheese
-  p.14 Ex.1 AUDIO: thumb, thimble
-  p.15 Ex.3: photo, dolphin, elephant
+Current app strategy:
+- official Spotlight clips: SH, CH and PH example words;
+- isolated phonemes: assets/audio/phonics_reference/;
+- all four TH words (thumb, thimble, the, this): one en-GB TTS voice.
 
-Important for p.14: the official exercise audio contains the instruction
-"Listen and repeat" and then the TWO recorded words thumb and thimble.
-The Teacher's Book instructs the teacher to pronounce "the" and "this"
-after the recording, so those two words must not be cut from track 12.
+The TH page intentionally does not use cut fragments from track 12 because they
+proved unreliable during repeated manual checks. The script also removes old TH
+and previous versioned clips so they cannot be picked up accidentally.
 
-Files use a v5 suffix so a browser cannot reuse any older incorrect clip.
+The official publisher audio remains local and is never committed.
 """
 
 from __future__ import annotations
@@ -34,43 +32,38 @@ OUT = ROOT / 'assets' / 'audio' / 'spotlight2_part1'
 TRACKS = {
     'sh': 'Letter Blends!/10 Letter Blends! D. Ex. 1, p. 12.mp3',
     'ch': 'Letter Blends!/11 Letter Blends! D. Ex. 3, p. 13.mp3',
-    'th': 'Letter Blends!/12 Letter Blends! E. Ex. 1, p. 14.mp3',
     'ph': 'Letter Blends!/13 Letter Blends! E. Ex. 3, p. 15.mp3',
 }
 
+# Cache-safe v5 clips currently referenced by LessonAudioService.
 # (filename, track, speech_start, speech_end, word, pad_before, pad_after)
-# Generous silence margins protect weak initial/final consonants.
 CLIPS = [
     ('word_sheep_v5.mp3', 'sh', 19.095624, 19.880975, 'sheep', 0.35, 0.35),
     ('word_fish_v5.mp3', 'sh', 22.931361, 23.540907, 'fish', 0.65, 0.35),
     ('word_ship_v5.mp3', 'sh', 26.646916, 27.223039, 'ship', 0.40, 0.35),
-
     ('word_chick_v5.mp3', 'ch', 17.281224, 17.838073, 'chick', 0.35, 0.35),
     ('word_cheese_v5.mp3', 'ch', 21.533946, 22.394059, 'cheese', 0.35, 0.35),
-
-    # Track 12 chunks after the instruction:
-    # ~6.43 s = thumb, ~8.53 s = thimble.
-    ('word_thumb_v5.mp3', 'th', 6.430396, 6.977083, 'thumb', 0.35, 0.35),
-    ('word_thimble_v5.mp3', 'th', 8.529167, 9.170958, 'thimble', 0.35, 0.35),
-
     ('word_photo_v5.mp3', 'ph', 16.243923, 16.875556, 'photo', 0.40, 0.35),
     ('word_dolphin_v5.mp3', 'ph', 20.420204, 21.155601, 'dolphin', 0.35, 0.35),
     ('word_elephant_v5.mp3', 'ph', 24.557755, 25.391814, 'elephant', 0.35, 0.35),
 ]
 
-OFFICIAL_BLEND_WORDS = [
+ALL_BLEND_WORDS = [
     'sheep', 'fish', 'ship', 'chick', 'cheese',
-    'thumb', 'thimble', 'photo', 'dolphin', 'elephant',
+    'thumb', 'thimble', 'the', 'this',
+    'photo', 'dolphin', 'elephant',
 ]
-ALL_HISTORICAL_BLEND_WORDS = OFFICIAL_BLEND_WORDS + ['the', 'this']
 
 
-def old_names() -> list[str]:
+def stale_names() -> list[str]:
     names: list[str] = []
-    for word in ALL_HISTORICAL_BLEND_WORDS:
+    for word in ALL_BLEND_WORDS:
         names.append(f'word_{word}.mp3')
         for version in ('v2', 'v3', 'v4'):
             names.append(f'word_{word}_{version}.mp3')
+    # TH is not file-backed in the current app; remove even v5 TH leftovers.
+    for word in ('thumb', 'thimble', 'the', 'this'):
+        names.append(f'word_{word}_v5.mp3')
     names += ['phoneme_sh.mp3', 'phoneme_ch.mp3', 'phoneme_ph.mp3']
     return names
 
@@ -113,11 +106,11 @@ def main() -> None:
 
     OUT.mkdir(parents=True, exist_ok=True)
 
-    for name in old_names():
+    for name in stale_names():
         path = OUT / name
         if path.exists():
             path.unlink()
-            print(f'removed old {path.relative_to(ROOT)}')
+            print(f'removed stale {path.relative_to(ROOT)}')
 
     manifest = []
     with tempfile.TemporaryDirectory(prefix='spotlight2_blends_') as tmp_name:
@@ -151,8 +144,8 @@ def main() -> None:
         json.dumps(manifest, ensure_ascii=False, indent=2) + '\n',
         encoding='utf-8',
     )
-    print(f'Prepared {len(CLIPS)} verified official Spotlight blend words (v5).')
-    print('the/this are intentionally NOT extracted from track 12.')
+    print(f'Prepared {len(CLIPS)} Spotlight Letter Blends word clips used by the app.')
+    print('TH word buttons use en-GB TTS and have no local Spotlight word clips.')
 
 
 if __name__ == '__main__':
