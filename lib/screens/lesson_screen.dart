@@ -29,7 +29,7 @@ class _LessonScreenState extends State<LessonScreen> {
     }
   }
 
-  Future<void> _playSample() async {
+  Future<void> _playPhoneme() async {
     if (_playing) return;
 
     final asset = widget.lesson.phonemeAudioAsset;
@@ -37,7 +37,7 @@ class _LessonScreenState extends State<LessonScreen> {
 
     if (asset == null && url == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Аудиообразец пока не добавлен.')),
+        const SnackBar(content: Text('Аудиозапись этого звука пока не добавлена.')),
       );
       return;
     }
@@ -52,9 +52,7 @@ class _LessonScreenState extends State<LessonScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Не удалось воспроизвести аудио. Проверь наличие подготовленных файлов Spotlight.'),
-          ),
+          const SnackBar(content: Text('Не удалось воспроизвести звук.')),
         );
       }
     } finally {
@@ -71,7 +69,6 @@ class _LessonScreenState extends State<LessonScreen> {
   @override
   Widget build(BuildContext context) {
     final lesson = widget.lesson;
-    final sampleWord = lesson.examples.first.word;
 
     return Scaffold(
       appBar: AppBar(title: Text(lesson.title)),
@@ -98,17 +95,9 @@ class _LessonScreenState extends State<LessonScreen> {
                   ),
                   const SizedBox(height: 18),
                   FilledButton.icon(
-                    onPressed: _playing ? null : _playSample,
+                    onPressed: _playing ? null : _playPhoneme,
                     icon: Icon(_playing ? Icons.hourglass_top_rounded : Icons.volume_up_rounded),
-                    label: Text(
-                      _playing ? 'Загрузка...' : 'Послушать слово «$sampleWord»',
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Это официальный пример из Spotlight, а не отдельно вырезанная фонема.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                    label: Text(_playing ? 'Загрузка...' : 'Послушать звук'),
                   ),
                 ],
               ),
