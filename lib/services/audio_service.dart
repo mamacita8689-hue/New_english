@@ -8,12 +8,10 @@ class LessonAudioService {
 
   static const String _spotlightAudioDir = 'audio/spotlight2_part1';
 
-  // Эти слова были заново проверены по исходным дорожкам Spotlight и получили
-  // новые имена файлов, чтобы браузер не мог подхватить старые ошибочные MP3 из кэша.
-  static const Set<String> _blendWordsV2 = {
+  static const Set<String> _blendWordsV3 = {
     'sheep', 'fish', 'ship',
     'chick', 'cheese',
-    'thumb', 'thimble', 'the', 'this',
+    'thumb', 'thimble',
     'photo', 'dolphin', 'elephant',
   };
 
@@ -33,13 +31,11 @@ class LessonAudioService {
     _configured = true;
   }
 
-  String _safeName(String text) {
-    return text
-        .trim()
-        .toLowerCase()
-        .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
-        .replaceAll(RegExp(r'^_+|_+$'), '');
-  }
+  String _safeName(String text) => text
+      .trim()
+      .toLowerCase()
+      .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
+      .replaceAll(RegExp(r'^_+|_+$'), '');
 
   Future<void> _playAsset(String assetPath) async {
     await _tts.stop();
@@ -62,22 +58,18 @@ class LessonAudioService {
   Future<void> speakWord(String word) async {
     final safe = _safeName(word);
 
-    // Для Letter Blends используем только повторно проверенные cache-safe v2 файлы.
-    if (_blendWordsV2.contains(safe)) {
-      if (await _tryPlayAsset('$_spotlightAudioDir/word_${safe}_v2.mp3')) return;
+    if (_blendWordsV3.contains(safe)) {
+      if (await _tryPlayAsset('$_spotlightAudioDir/word_${safe}_v3.mp3')) return;
     } else {
-      // Для My Letters используем проверенные официальные фрагменты.
       if (await _tryPlayAsset('$_spotlightAudioDir/word_$safe.mp3')) return;
     }
 
-    // Резервный локальный файл.
     if (await _tryPlayAsset('audio/word_$safe.mp3')) return;
 
-    // Последний резерв только для разработки.
     await _configureTts();
     await _tts.stop();
     await _player.stop();
-    await _tts.setSpeechRate(0.45);
+    await _tts.setSpeechRate(0.38);
     await _tts.speak(word);
   }
 
@@ -91,13 +83,11 @@ class LessonAudioService {
     await _configureTts();
     await _tts.stop();
     await _player.stop();
-    final spoken = _britishLetterNames[normalized] ?? normalized;
     await _tts.setSpeechRate(0.40);
-    await _tts.speak(spoken);
+    await _tts.speak(_britishLetterNames[normalized] ?? normalized);
   }
 
   Future<void> playPhonemeAsset(String assetPath) async {
-    // Фонема должна проигрываться строго из указанного источника.
     await _playAsset(assetPath);
   }
 
