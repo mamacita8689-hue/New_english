@@ -8,10 +8,10 @@ class LessonAudioService {
 
   static const String _spotlightAudioDir = 'audio/spotlight2_part1';
 
-  static const Set<String> _blendWordsV3 = {
+  static const Set<String> _blendWordsV4 = {
     'sheep', 'fish', 'ship',
     'chick', 'cheese',
-    'thumb', 'thimble',
+    'thumb', 'thimble', 'the', 'this',
     'photo', 'dolphin', 'elephant',
   };
 
@@ -58,8 +58,8 @@ class LessonAudioService {
   Future<void> speakWord(String word) async {
     final safe = _safeName(word);
 
-    if (_blendWordsV3.contains(safe)) {
-      if (await _tryPlayAsset('$_spotlightAudioDir/word_${safe}_v3.mp3')) return;
+    if (_blendWordsV4.contains(safe)) {
+      if (await _tryPlayAsset('$_spotlightAudioDir/word_${safe}_v4.mp3')) return;
     } else {
       if (await _tryPlayAsset('$_spotlightAudioDir/word_$safe.mp3')) return;
     }
