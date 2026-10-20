@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
-"""Prepare Spotlight 2 Part 1 Letter Blends word clips locally.
+"""Prepare verified Spotlight 2 Part 1 Letter Blends word clips locally.
 
 Usage:
     python3 tool/prepare_spotlight_letter_blends.py /path/to/official_part1.zip
 
-The archive stays local. This version uses the actual order of the official
-recordings and keeps generous silence margins so quiet initial consonants are
-not clipped.
-
-Official mapping used by the app:
+Verified source mapping:
   p.12 Ex.1: sheep, fish, ship
   p.13 Ex.3: chick, cheese
-  p.14 Ex.1: thumb, thimble, the, this
+  p.14 Ex.1 AUDIO: thumb, thimble
   p.15 Ex.3: photo, dolphin, elephant
 
-Files use a v4 suffix so the browser cannot reuse older incorrect audio.
+Important for p.14: the official exercise audio contains the instruction
+"Listen and repeat" and then the TWO recorded words thumb and thimble.
+The Teacher's Book instructs the teacher to pronounce "the" and "this"
+after the recording, so those two words must not be cut from track 12.
+
+Files use a v5 suffix so a browser cannot reuse any older incorrect clip.
 """
 
 from __future__ import annotations
@@ -38,39 +39,38 @@ TRACKS = {
 }
 
 # (filename, track, speech_start, speech_end, word, pad_before, pad_after)
-# Extra pre-roll is intentional for weak fricatives such as /f/ and /θ/.
+# Generous silence margins protect weak initial/final consonants.
 CLIPS = [
-    ('word_sheep_v4.mp3', 'sh', 19.095624, 19.880975, 'sheep', 0.35, 0.35),
-    ('word_fish_v4.mp3', 'sh', 22.931361, 23.540907, 'fish', 0.65, 0.35),
-    ('word_ship_v4.mp3', 'sh', 26.646916, 27.223039, 'ship', 0.40, 0.35),
+    ('word_sheep_v5.mp3', 'sh', 19.095624, 19.880975, 'sheep', 0.35, 0.35),
+    ('word_fish_v5.mp3', 'sh', 22.931361, 23.540907, 'fish', 0.65, 0.35),
+    ('word_ship_v5.mp3', 'sh', 26.646916, 27.223039, 'ship', 0.40, 0.35),
 
-    ('word_chick_v4.mp3', 'ch', 17.281224, 17.838073, 'chick', 0.35, 0.35),
-    ('word_cheese_v4.mp3', 'ch', 21.533946, 22.394059, 'cheese', 0.35, 0.35),
+    ('word_chick_v5.mp3', 'ch', 17.281224, 17.838073, 'chick', 0.35, 0.35),
+    ('word_cheese_v5.mp3', 'ch', 21.533946, 22.394059, 'cheese', 0.35, 0.35),
 
-    # Track 12: one instruction phrase followed by the four textbook words.
-    ('word_thumb_v4.mp3', 'th', 3.360167, 3.945812, 'thumb', 0.35, 0.30),
-    ('word_thimble_v4.mp3', 'th', 4.329292, 5.336646, 'thimble', 0.25, 0.35),
-    ('word_the_v4.mp3', 'th', 6.430396, 6.977083, 'the', 0.35, 0.40),
-    ('word_this_v4.mp3', 'th', 8.529167, 9.170958, 'this', 0.35, 0.35),
+    # Track 12 chunks after the instruction:
+    # ~6.43 s = thumb, ~8.53 s = thimble.
+    ('word_thumb_v5.mp3', 'th', 6.430396, 6.977083, 'thumb', 0.35, 0.35),
+    ('word_thimble_v5.mp3', 'th', 8.529167, 9.170958, 'thimble', 0.35, 0.35),
 
-    ('word_photo_v4.mp3', 'ph', 16.243923, 16.875556, 'photo', 0.40, 0.35),
-    ('word_dolphin_v4.mp3', 'ph', 20.420204, 21.155601, 'dolphin', 0.35, 0.35),
-    ('word_elephant_v4.mp3', 'ph', 24.557755, 25.391814, 'elephant', 0.35, 0.35),
+    ('word_photo_v5.mp3', 'ph', 16.243923, 16.875556, 'photo', 0.40, 0.35),
+    ('word_dolphin_v5.mp3', 'ph', 20.420204, 21.155601, 'dolphin', 0.35, 0.35),
+    ('word_elephant_v5.mp3', 'ph', 24.557755, 25.391814, 'elephant', 0.35, 0.35),
 ]
 
-BLEND_WORDS = [
+OFFICIAL_BLEND_WORDS = [
     'sheep', 'fish', 'ship', 'chick', 'cheese',
-    'thumb', 'thimble', 'the', 'this',
-    'photo', 'dolphin', 'elephant',
+    'thumb', 'thimble', 'photo', 'dolphin', 'elephant',
 ]
+ALL_HISTORICAL_BLEND_WORDS = OFFICIAL_BLEND_WORDS + ['the', 'this']
 
 
 def old_names() -> list[str]:
     names: list[str] = []
-    for word in BLEND_WORDS:
+    for word in ALL_HISTORICAL_BLEND_WORDS:
         names.append(f'word_{word}.mp3')
-        names.append(f'word_{word}_v2.mp3')
-        names.append(f'word_{word}_v3.mp3')
+        for version in ('v2', 'v3', 'v4'):
+            names.append(f'word_{word}_{version}.mp3')
     names += ['phoneme_sh.mp3', 'phoneme_ch.mp3', 'phoneme_ph.mp3']
     return names
 
@@ -151,7 +151,8 @@ def main() -> None:
         json.dumps(manifest, ensure_ascii=False, indent=2) + '\n',
         encoding='utf-8',
     )
-    print(f'Prepared {len(CLIPS)} cache-safe Spotlight blend words (v4).')
+    print(f'Prepared {len(CLIPS)} verified official Spotlight blend words (v5).')
+    print('the/this are intentionally NOT extracted from track 12.')
 
 
 if __name__ == '__main__':
