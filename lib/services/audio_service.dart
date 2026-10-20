@@ -11,12 +11,15 @@ class LessonAudioService {
   static const Set<String> _blendWordsV5 = {
     'sheep', 'fish', 'ship',
     'chick', 'cheese',
-    'thumb', 'thimble',
     'photo', 'dolphin', 'elephant',
   };
 
-  static const Set<String> _ttsOnlyWords = {
-    'the', 'this',
+  // TH words are intentionally spoken by one British TTS voice.
+  // We no longer use cut fragments from the p.14 recording for these words,
+  // because repeated manual checks showed that those fragments were not a
+  // reliable one-word source in the app.
+  static const Set<String> _thWords = {
+    'thumb', 'thimble', 'the', 'this',
   };
 
   static const Map<String, String> _britishLetterNames = {
@@ -29,9 +32,32 @@ class LessonAudioService {
 
   Future<void> _configureTts() async {
     if (_configured) return;
+
     await _tts.setLanguage('en-GB');
     await _tts.setPitch(1.0);
     await _tts.setVolume(1.0);
+
+    // Prefer a real en-GB voice when the browser exposes one.
+    try {
+      final dynamic voices = await _tts.getVoices;
+      if (voices is List) {
+        for (final dynamic rawVoice in voices) {
+          if (rawVoice is Map) {
+            final name = rawVoice['name']?.toString();
+            final locale = rawVoice['locale']?.toString();
+            if (name != null &&
+                locale != null &&
+                locale.toLowerCase().startsWith('en-gb')) {
+              await _tts.setVoice({'name': name, 'locale': locale});
+              break;
+            }
+          }
+        }
+      }
+    } catch (_) {
+      // setLanguage('en-GB') remains the fallback.
+    }
+
     _configured = true;
   }
 
@@ -59,20 +85,21 @@ class LessonAudioService {
     }
   }
 
-  Future<void> _speakTtsWord(String word) async {
+  Future<void> _speakBritishWord(String word) async {
     await _configureTts();
-    await _tts.stop();
     await _player.stop();
-    await _tts.setSpeechRate(0.34);
+    await _tts.stop();
+    await _tts.setSpeechRate(0.32);
     await _tts.speak(word);
   }
 
   Future<void> speakWord(String word) async {
     final safe = _safeName(word);
 
-    // p.14: the/this are classroom examples, not words from official track 12.
-    if (_ttsOnlyWords.contains(safe)) {
-      await _speakTtsWord(word);
+    // Deterministic fix for the whole TH page: one exact word goes to TTS,
+    // never to a cut Spotlight fragment.
+    if (_thWords.contains(safe)) {
+      await _speakBritishWord(word);
       return;
     }
 
@@ -84,7 +111,7 @@ class LessonAudioService {
 
     if (await _tryPlayAsset('audio/word_$safe.mp3')) return;
 
-    await _speakTtsWord(word);
+    await _speakBritishWord(word);
   }
 
   Future<void> speakLetterName(String letter) async {
