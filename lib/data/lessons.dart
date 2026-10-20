@@ -1,13 +1,8 @@
 import '../models/lesson.dart';
 
-const _spotlightAudio = 'audio/spotlight2_part1';
+const _phonicsAudio = 'audio/phonics_reference';
 const _audioCredit =
-    'Spotlight 2, часть 1 — официальное аудиоприложение «Просвещение»';
-
-// ВАЖНО: в официальных дорожках 10–13 нет чистых изолированных записей
-// SH/CH/PH. Там звучит инструкция "Listen and repeat", затем слова из
-// учебника. Поэтому кнопка в уроке воспроизводит проверенное СЛОВО-ОБРАЗЕЦ,
-// а не пытается вырезать фонему из инструкции.
+    'Фонема — чистая UK phonics-запись; слова — официальное аудиоприложение Spotlight 2, часть 1 («Просвещение»)';
 
 const shLesson = SoundLesson(
   id: 'sh',
@@ -15,8 +10,8 @@ const shLesson = SoundLesson(
   grapheme: 'SH',
   phoneme: '/ʃ/',
   explanation:
-      'SH читается как /ʃ/. В официальной записи Spotlight 2 слушаем слова sheep, fish и ship. Образец для кнопки — слово sheep.',
-  phonemeAudioUrl: '$_spotlightAudio/word_sheep.mp3',
+      'SH читается как /ʃ/. Сначала послушай сам звук, затем слова Spotlight 2: sheep, fish и ship.',
+  phonemeAudioAsset: '$_phonicsAudio/phoneme_sh.mp3',
   audioCredit: _audioCredit,
   examples: [
     ExampleWord(word: 'sheep', emoji: '🐑'),
@@ -43,8 +38,8 @@ const chLesson = SoundLesson(
   grapheme: 'CH',
   phoneme: '/tʃ/',
   explanation:
-      'CH читается как /tʃ/. В официальной записи Spotlight 2 слушаем chick и cheese. Образец для кнопки — слово chick.',
-  phonemeAudioUrl: '$_spotlightAudio/word_chick.mp3',
+      'CH читается как /tʃ/. Сначала послушай сам звук, затем слова Spotlight 2: chick и cheese.',
+  phonemeAudioAsset: '$_phonicsAudio/phoneme_ch.mp3',
   audioCredit: _audioCredit,
   examples: [
     ExampleWord(word: 'chick', emoji: '🐥'),
@@ -70,8 +65,8 @@ const thVoicelessLesson = SoundLesson(
   grapheme: 'TH',
   phoneme: '/θ/',
   explanation:
-      'В словах thumb и thimble сочетание TH произносится без голоса: /θ/. Образец для кнопки — слово thumb.',
-  phonemeAudioUrl: '$_spotlightAudio/word_thumb.mp3',
+      'В словах thumb и thimble сочетание TH произносится без голоса: /θ/. Сначала послушай сам звук.',
+  phonemeAudioAsset: '$_phonicsAudio/phoneme_th_thing.mp3',
   audioCredit: _audioCredit,
   examples: [
     ExampleWord(word: 'thumb', emoji: '👍'),
@@ -97,8 +92,8 @@ const thVoicedLesson = SoundLesson(
   grapheme: 'TH',
   phoneme: '/ð/',
   explanation:
-      'В словах the и this сочетание TH произносится с голосом: /ð/. Образец для кнопки — слово this.',
-  phonemeAudioUrl: '$_spotlightAudio/word_this.mp3',
+      'В словах the и this сочетание TH произносится с голосом: /ð/. Сначала послушай сам звук.',
+  phonemeAudioAsset: '$_phonicsAudio/phoneme_th_that.mp3',
   audioCredit: _audioCredit,
   examples: [
     ExampleWord(word: 'the', emoji: '🔤'),
@@ -124,8 +119,8 @@ const phLesson = SoundLesson(
   grapheme: 'PH',
   phoneme: '/f/',
   explanation:
-      'PH читается как /f/. В официальной записи Spotlight 2 слушаем photo, dolphin и elephant. Образец для кнопки — слово photo.',
-  phonemeAudioUrl: '$_spotlightAudio/word_photo.mp3',
+      'PH читается как /f/. Сначала послушай сам звук, затем слова Spotlight 2: photo, dolphin и elephant.',
+  phonemeAudioAsset: '$_phonicsAudio/phoneme_f.mp3',
   audioCredit: _audioCredit,
   examples: [
     ExampleWord(word: 'photo', emoji: '📷'),
@@ -146,8 +141,6 @@ const phLesson = SoundLesson(
   ],
 );
 
-// В основном курсе оставляем только то, что действительно есть в Spotlight 2
-// на страницах 12–15 и проверено по официальным дорожкам 10–13.
 const soundLessons = [
   shLesson,
   chLesson,
