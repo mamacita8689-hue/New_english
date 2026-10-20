@@ -29,7 +29,7 @@ class _LessonScreenState extends State<LessonScreen> {
     }
   }
 
-  Future<void> _playPhoneme() async {
+  Future<void> _playSample() async {
     if (_playing) return;
 
     final asset = widget.lesson.phonemeAudioAsset;
@@ -37,7 +37,7 @@ class _LessonScreenState extends State<LessonScreen> {
 
     if (asset == null && url == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Аудиозапись этого звука пока не добавлена.')),
+        const SnackBar(content: Text('Аудиообразец пока не добавлен.')),
       );
       return;
     }
@@ -53,7 +53,7 @@ class _LessonScreenState extends State<LessonScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Не удалось загрузить звук. Проверь подключение к интернету.'),
+            content: Text('Не удалось воспроизвести аудио. Проверь наличие подготовленных файлов Spotlight.'),
           ),
         );
       }
@@ -71,6 +71,7 @@ class _LessonScreenState extends State<LessonScreen> {
   @override
   Widget build(BuildContext context) {
     final lesson = widget.lesson;
+    final sampleWord = lesson.examples.first.word;
 
     return Scaffold(
       appBar: AppBar(title: Text(lesson.title)),
@@ -97,9 +98,17 @@ class _LessonScreenState extends State<LessonScreen> {
                   ),
                   const SizedBox(height: 18),
                   FilledButton.icon(
-                    onPressed: _playing ? null : _playPhoneme,
+                    onPressed: _playing ? null : _playSample,
                     icon: Icon(_playing ? Icons.hourglass_top_rounded : Icons.volume_up_rounded),
-                    label: Text(_playing ? 'Загрузка...' : 'Послушать звук'),
+                    label: Text(
+                      _playing ? 'Загрузка...' : 'Послушать слово «$sampleWord»',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Это официальный пример из Spotlight, а не отдельно вырезанная фонема.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
                   ),
                 ],
               ),
@@ -145,7 +154,7 @@ class _LessonScreenState extends State<LessonScreen> {
             if (lesson.audioCredit != null) ...[
               const SizedBox(height: 8),
               Text(
-                'Аудио фонемы: ${lesson.audioCredit}',
+                'Аудио: ${lesson.audioCredit}',
                 style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               ),
             ],
