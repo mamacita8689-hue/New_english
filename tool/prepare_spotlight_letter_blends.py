@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
-"""Prepare verified Spotlight 2 Part 1 Letter Blends word clips locally.
+"""Prepare Spotlight 2 Part 1 Letter Blends word clips locally.
 
 Usage:
     python3 tool/prepare_spotlight_letter_blends.py /path/to/official_part1.zip
 
-The archive stays local. The mapping below follows the actual official tracks:
+The archive stays local. This version uses the actual order of the official
+recordings and keeps generous silence margins so quiet initial consonants are
+not clipped.
+
+Official mapping used by the app:
   p.12 Ex.1: sheep, fish, ship
   p.13 Ex.3: chick, cheese
-  p.14 Ex.1: thumb, thimble
+  p.14 Ex.1: thumb, thimble, the, this
   p.15 Ex.3: photo, dolphin, elephant
 
-Important: the official p.14 audio track does NOT contain isolated recordings
-of "the" and "this". Those words are handled separately in the app instead of
-being falsely mapped onto "Listen / repeat / thumb / thimble".
-
-Files use a v3 suffix so browsers cannot reuse older incorrectly cut clips.
+Files use a v4 suffix so the browser cannot reuse older incorrect audio.
 """
 
 from __future__ import annotations
@@ -37,41 +37,42 @@ TRACKS = {
     'ph': 'Letter Blends!/13 Letter Blends! E. Ex. 3, p. 15.mp3',
 }
 
-# Verified speech intervals from the official archive. A safe amount of the
-# surrounding silence is included so weak consonants such as initial /f/ in
-# "fish" and final stop bursts are not clipped.
 # (filename, track, speech_start, speech_end, word, pad_before, pad_after)
+# Extra pre-roll is intentional for weak fricatives such as /f/ and /θ/.
 CLIPS = [
-    ('word_sheep_v3.mp3', 'sh', 19.095624, 19.880975, 'sheep', 0.18, 0.16),
-    ('word_fish_v3.mp3', 'sh', 22.931361, 23.540907, 'fish', 0.28, 0.18),
-    ('word_ship_v3.mp3', 'sh', 26.646916, 27.223039, 'ship', 0.22, 0.18),
+    ('word_sheep_v4.mp3', 'sh', 19.095624, 19.880975, 'sheep', 0.35, 0.35),
+    ('word_fish_v4.mp3', 'sh', 22.931361, 23.540907, 'fish', 0.65, 0.35),
+    ('word_ship_v4.mp3', 'sh', 26.646916, 27.223039, 'ship', 0.40, 0.35),
 
-    ('word_chick_v3.mp3', 'ch', 17.282336, 17.800635, 'chick', 0.18, 0.18),
-    ('word_cheese_v3.mp3', 'ch', 21.533968, 22.363741, 'cheese', 0.18, 0.18),
+    ('word_chick_v4.mp3', 'ch', 17.281224, 17.838073, 'chick', 0.35, 0.35),
+    ('word_cheese_v4.mp3', 'ch', 21.533946, 22.394059, 'cheese', 0.35, 0.35),
 
-    # Track 12 structure is:
-    # 1.129-2.539 intro, 3.360-3.946 "Listen", 4.329-5.337 "repeat",
-    # 6.430-6.977 "thumb", 8.529-9.171 "thimble".
-    ('word_thumb_v3.mp3', 'th', 6.430396, 6.977083, 'thumb', 0.20, 0.20),
-    ('word_thimble_v3.mp3', 'th', 8.529167, 9.170958, 'thimble', 0.20, 0.20),
+    # Track 12: one instruction phrase followed by the four textbook words.
+    ('word_thumb_v4.mp3', 'th', 3.360167, 3.945812, 'thumb', 0.35, 0.30),
+    ('word_thimble_v4.mp3', 'th', 4.329292, 5.336646, 'thimble', 0.25, 0.35),
+    ('word_the_v4.mp3', 'th', 6.430396, 6.977083, 'the', 0.35, 0.40),
+    ('word_this_v4.mp3', 'th', 8.529167, 9.170958, 'this', 0.35, 0.35),
 
-    ('word_photo_v3.mp3', 'ph', 16.264717, 16.865918, 'photo', 0.18, 0.18),
-    ('word_dolphin_v3.mp3', 'ph', 20.420363, 21.119388, 'dolphin', 0.18, 0.18),
-    ('word_elephant_v3.mp3', 'ph', 24.557868, 25.353152, 'elephant', 0.18, 0.18),
+    ('word_photo_v4.mp3', 'ph', 16.243923, 16.875556, 'photo', 0.40, 0.35),
+    ('word_dolphin_v4.mp3', 'ph', 20.420204, 21.155601, 'dolphin', 0.35, 0.35),
+    ('word_elephant_v4.mp3', 'ph', 24.557755, 25.391814, 'elephant', 0.35, 0.35),
 ]
 
-# Remove every previous experimental version so no stale file can be selected.
-OLD_BLEND_FILES = [
-    *(f'word_{w}.mp3' for w in [
-        'sheep', 'fish', 'ship', 'chick', 'cheese', 'thumb', 'thimble',
-        'the', 'this', 'photo', 'dolphin', 'elephant',
-    ]),
-    *(f'word_{w}_v2.mp3' for w in [
-        'sheep', 'fish', 'ship', 'chick', 'cheese', 'thumb', 'thimble',
-        'the', 'this', 'photo', 'dolphin', 'elephant',
-    ]),
-    'phoneme_sh.mp3', 'phoneme_ch.mp3', 'phoneme_ph.mp3',
+BLEND_WORDS = [
+    'sheep', 'fish', 'ship', 'chick', 'cheese',
+    'thumb', 'thimble', 'the', 'this',
+    'photo', 'dolphin', 'elephant',
 ]
+
+
+def old_names() -> list[str]:
+    names: list[str] = []
+    for word in BLEND_WORDS:
+        names.append(f'word_{word}.mp3')
+        names.append(f'word_{word}_v2.mp3')
+        names.append(f'word_{word}_v3.mp3')
+    names += ['phoneme_sh.mp3', 'phoneme_ch.mp3', 'phoneme_ph.mp3']
+    return names
 
 
 def cut(
@@ -112,7 +113,7 @@ def main() -> None:
 
     OUT.mkdir(parents=True, exist_ok=True)
 
-    for name in OLD_BLEND_FILES:
+    for name in old_names():
         path = OUT / name
         if path.exists():
             path.unlink()
@@ -132,9 +133,7 @@ def main() -> None:
             source_name = TRACKS[track_key]
             source = tmp / source_name
             target = OUT / file_name
-            start, end = cut(
-                source, target, speech_start, speech_end, before, after,
-            )
+            start, end = cut(source, target, speech_start, speech_end, before, after)
             manifest.append({
                 'file': file_name,
                 'kind': 'word',
@@ -152,8 +151,7 @@ def main() -> None:
         json.dumps(manifest, ensure_ascii=False, indent=2) + '\n',
         encoding='utf-8',
     )
-    print(f'Prepared {len(CLIPS)} verified Spotlight blend words (v3).')
-    print('Voiced TH words "the" and "this" are intentionally not cut from track 12.')
+    print(f'Prepared {len(CLIPS)} cache-safe Spotlight blend words (v4).')
 
 
 if __name__ == '__main__':
