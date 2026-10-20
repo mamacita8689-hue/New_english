@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
-"""Prepare Spotlight 2 Part 1 Letter Blends audio clips locally.
+"""Prepare verified Spotlight 2 Part 1 Letter Blends word clips locally.
 
 Usage:
     python3 tool/prepare_spotlight_letter_blends.py /path/to/official_part1.zip
 
-The official archive remains local and is never committed. The script extracts
-short clips used by the app to assets/audio/spotlight2_part1/.
+Important:
+- The official tracks 10, 11 and 13 contain the exercise instruction
+  ("Listen and repeat") followed by WORDS. They do not provide a clean,
+  isolated SH/CH/PH phoneme recording.
+- Track 12 contains the four TH example words.
+- Therefore this script creates ONLY verified official word clips. It never
+  labels a piece of the instruction as a phoneme.
+- Old experimental phoneme_sh/ch/ph files are deleted so the app cannot play
+  stale/mislabelled audio.
 
-Mapped from the official Part 1 audio:
-  track 10, p.12: SH — sheep, fish, ship
-  track 11, p.13: CH — chick, cheese
-  track 12, p.14: TH — thumb, thimble, the, this
-  track 13, p.15: PH — photo, dolphin, elephant
+Verified textbook mapping:
+  track 10, p.12: sheep, fish, ship
+  track 11, p.13: chick, cheese
+  track 12, p.14: thumb, thimble, the, this
+  track 13, p.15: photo, dolphin, elephant
 """
 
 from __future__ import annotations
@@ -34,53 +41,65 @@ TRACKS = {
     "ph": "Letter Blends!/13 Letter Blends! E. Ex. 3, p. 15.mp3",
 }
 
-# start/end in seconds. Boundaries are aligned to the quiet gaps in the
-# official tracks, with a small safety margin so final consonants are not cut.
+# Speech intervals were checked against silence boundaries in the official
+# archive and against the order printed in Spotlight 2. Padding is added in
+# cut() so stops such as the final /p/ in "sheep" are not clipped.
 CLIPS = [
-    # Track 10: the isolated SH sound is BEFORE the spoken word "repeat".
-    ("phoneme_sh.mp3", "sh", 15.30, 15.95, "blend", "SH /ʃ/"),
-    ("word_sheep.mp3", "sh", 19.03, 19.96, "word", "sheep"),
-    ("word_fish.mp3", "sh", 22.87, 23.61, "word", "fish"),
-    ("word_ship.mp3", "sh", 26.58, 27.31, "word", "ship"),
+    ("word_sheep.mp3", "sh", 19.080, 19.950, "sheep"),
+    ("word_fish.mp3", "sh", 22.930, 23.660, "fish"),
+    ("word_ship.mp3", "sh", 26.640, 27.300, "ship"),
 
-    # Track 11: likewise, CH is immediately before "repeat".
-    ("phoneme_ch.mp3", "ch", 13.41, 14.05, "blend", "CH /tʃ/"),
-    ("word_chick.mp3", "ch", 17.22, 17.87, "word", "chick"),
-    ("word_cheese.mp3", "ch", 21.47, 22.45, "word", "cheese"),
+    ("word_chick.mp3", "ch", 17.280, 17.870, "chick"),
+    ("word_cheese.mp3", "ch", 21.530, 22.390, "cheese"),
 
-    # Track 12 contains the example words themselves (no separate isolated TH
-    # clip), so the lesson uses thumb/this as the official pronunciation model.
-    ("word_thumb.mp3", "th", 3.30, 4.02, "word", "thumb"),
-    ("word_thimble.mp3", "th", 4.27, 5.42, "word", "thimble"),
-    ("word_the.mp3", "th", 6.37, 7.04, "word", "the"),
-    ("word_this.mp3", "th", 8.45, 9.24, "word", "this"),
+    ("word_thumb.mp3", "th", 3.320, 3.960, "thumb"),
+    ("word_thimble.mp3", "th", 4.300, 5.360, "thimble"),
+    ("word_the.mp3", "th", 6.370, 6.990, "the"),
+    ("word_this.mp3", "th", 8.490, 9.220, "this"),
 
-    # Track 13: PH words from the textbook exercise.
-    ("word_photo.mp3", "ph", 16.18, 16.94, "word", "photo"),
-    ("word_dolphin.mp3", "ph", 20.36, 21.20, "word", "dolphin"),
-    ("word_elephant.mp3", "ph", 24.50, 25.43, "word", "elephant"),
+    ("word_photo.mp3", "ph", 16.240, 16.880, "photo"),
+    ("word_dolphin.mp3", "ph", 20.420, 21.160, "dolphin"),
+    ("word_elephant.mp3", "ph", 24.560, 25.390, "elephant"),
 ]
 
+STALE_EXPERIMENTAL_FILES = (
+    "phoneme_sh.mp3",
+    "phoneme_ch.mp3",
+    "phoneme_ph.mp3",
+)
 
-def cut(source: Path, target: Path, start: float, end: float) -> None:
-    """Cut accurately and re-encode so short consonants are not lost."""
+
+def cut(
+    source: Path,
+    target: Path,
+    start: float,
+    end: float,
+    pad_before: float = 0.12,
+    pad_after: float = 0.30,
+) -> tuple[float, float]:
+    """Accurately cut and re-encode a word with safe consonant margins."""
+    real_start = max(0.0, start - pad_before)
+    real_end = end + pad_after
+    duration = real_end - real_start
     target.parent.mkdir(parents=True, exist_ok=True)
-    duration = end - start
     subprocess.run(
         [
             "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
             "-i", str(source),
-            "-ss", f"{start:.3f}",
+            "-ss", f"{real_start:.3f}",
             "-t", f"{duration:.3f}",
             "-vn", "-codec:a", "libmp3lame", "-q:a", "2", str(target),
         ],
         check=True,
     )
+    return real_start, real_end
 
 
 def main() -> None:
     if len(sys.argv) != 2:
-        raise SystemExit("Usage: python3 tool/prepare_spotlight_letter_blends.py <official_part1.zip>")
+        raise SystemExit(
+            "Usage: python3 tool/prepare_spotlight_letter_blends.py <official_part1.zip>"
+        )
 
     archive = Path(sys.argv[1]).expanduser().resolve()
     if not archive.is_file():
@@ -89,8 +108,15 @@ def main() -> None:
         raise SystemExit("ffmpeg is required")
 
     OUT.mkdir(parents=True, exist_ok=True)
-    manifest = []
 
+    # Never let stale experimental cuts masquerade as isolated phonemes.
+    for name in STALE_EXPERIMENTAL_FILES:
+        path = OUT / name
+        if path.exists():
+            path.unlink()
+            print(f"removed stale {path.relative_to(ROOT)}")
+
+    manifest = []
     with tempfile.TemporaryDirectory(prefix="spotlight2_") as temp_name:
         temp = Path(temp_name)
         with zipfile.ZipFile(archive) as zf:
@@ -100,26 +126,30 @@ def main() -> None:
                 except KeyError as exc:
                     raise SystemExit(f"Required track is missing: {source_name}") from exc
 
-        for file_name, track_key, start, end, kind, value in CLIPS:
+        for file_name, track_key, start, end, word in CLIPS:
             source_name = TRACKS[track_key]
             source = temp / source_name
             target = OUT / file_name
-            cut(source, target, start, end)
+            real_start, real_end = cut(source, target, start, end)
             manifest.append({
                 "file": file_name,
-                "kind": kind,
-                "value": value,
+                "kind": "word",
+                "value": word,
                 "source": source_name,
-                "start": start,
-                "end": end,
+                "speech_start": start,
+                "speech_end": end,
+                "clip_start": round(real_start, 3),
+                "clip_end": round(real_end, 3),
+                "verified": True,
             })
-            print(f"created {target.relative_to(ROOT)}")
+            print(f"created {target.relative_to(ROOT)} <- {word}")
 
     (OUT / "letter_blends_manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    print(f"Prepared {len(CLIPS)} official Spotlight Letter Blends clips.")
+    print(f"Prepared {len(CLIPS)} verified official Spotlight word clips.")
+    print("No isolated SH/CH/PH phoneme was taken from the instruction audio.")
 
 
 if __name__ == "__main__":
