@@ -27,10 +27,7 @@ class _PracticeQuestion {
   final SoundLesson target;
   final List<SoundLesson> options;
 
-  const _PracticeQuestion({
-    required this.target,
-    required this.options,
-  });
+  const _PracticeQuestion({required this.target, required this.options});
 }
 
 class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
@@ -71,20 +68,27 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
 
       final options = <SoundLesson>[target, ...distractors.take(2)]
         ..shuffle(_random);
-
       return _PracticeQuestion(target: target, options: options);
     }).toList();
   }
 
-  Future<void> _playSample(SoundLesson lesson) async {
-    if (_playing || lesson.phonemeAudioUrl == null) return;
+  Future<void> _playPhoneme(SoundLesson lesson) async {
+    if (_playing) return;
+    final asset = lesson.phonemeAudioAsset;
+    final url = lesson.phonemeAudioUrl;
+    if (asset == null && url == null) return;
+
     setState(() => _playing = true);
     try {
-      await _audio.playPhonemeUrl(lesson.phonemeAudioUrl!);
+      if (asset != null) {
+        await _audio.playPhonemeAsset(asset);
+      } else {
+        await _audio.playPhonemeUrl(url!);
+      }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Не удалось воспроизвести аудиообразец.')),
+          const SnackBar(content: Text('Не удалось воспроизвести звук.')),
         );
       }
     } finally {
@@ -94,19 +98,17 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
 
   void _choose(SoundLesson option) {
     if (_answered) return;
-
     if (option.id == _question.target.id) {
       setState(() {
         _answered = true;
         if (!_mistake) _firstTryScore++;
       });
-      return;
+    } else {
+      setState(() {
+        _mistake = true;
+        _wrongIds.add(option.id);
+      });
     }
-
-    setState(() {
-      _mistake = true;
-      _wrongIds.add(option.id);
-    });
   }
 
   void _next() {
@@ -114,7 +116,6 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
       setState(() => _finished = true);
       return;
     }
-
     setState(() {
       _index++;
       _answered = false;
@@ -144,12 +145,11 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
   @override
   Widget build(BuildContext context) {
     if (_finished) return _buildResult();
-
     final listenMode = widget.mode == SoundPracticeMode.hearAndChooseGrapheme;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(listenMode ? 'Услышь сочетание' : 'Найди правильный звук'),
+        title: Text(listenMode ? 'Услышь звук' : 'Найди правильный звук'),
       ),
       body: SafeArea(
         child: Padding(
@@ -191,9 +191,7 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
                           FilledButton(
                             onPressed: _next,
                             child: Text(
-                              _index == _questions.length - 1
-                                  ? 'Результат'
-                                  : 'Следующее',
+                              _index == _questions.length - 1 ? 'Результат' : 'Следующее',
                             ),
                           ),
                         ],
@@ -203,13 +201,11 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
                             key: const ValueKey('retry'),
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .secondaryContainer,
+                              color: Theme.of(context).colorScheme.secondaryContainer,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: const Text(
-                              'Попробуй ещё раз. Можно снова послушать слово-образец.',
+                              'Попробуй ещё раз. Можно снова послушать звук.',
                               textAlign: TextAlign.center,
                               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
                             ),
@@ -224,29 +220,22 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
   }
 
   Widget _buildListenPrompt() {
-    final sampleWord = _question.target.examples.first.word;
     return Column(
       children: [
         const Text(
-          'Послушай слово. Какое сочетание букв в нём слышится?',
+          'Какое сочетание букв даёт этот звук?',
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Официальный образец Spotlight: $sampleWord',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
         ),
         const SizedBox(height: 18),
         FilledButton.icon(
           style: FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
           ),
-          onPressed: _playing ? null : () => _playSample(_question.target),
+          onPressed: _playing ? null : () => _playPhoneme(_question.target),
           icon: Icon(_playing ? Icons.hourglass_top : Icons.volume_up_rounded),
           label: Text(
-            _playing ? 'Слушаем…' : 'Послушать слово',
+            _playing ? 'Слушаем…' : 'Послушать звук',
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
         ),
@@ -277,11 +266,13 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
             style: const TextStyle(fontSize: 56, fontWeight: FontWeight.w900),
           ),
         ),
-        const SizedBox(height: 12),
-        Text(
-          'Пример: ${target.examples.first.word}',
-          style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
-        ),
+        if (target.grapheme == 'TH') ...[
+          const SizedBox(height: 12),
+          Text(
+            'Подсказка: ${target.examples.first.word}',
+            style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+          ),
+        ],
       ],
     );
   }
@@ -348,16 +339,16 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
               child: Row(
                 children: [
                   IconButton.filledTonal(
-                    tooltip: 'Послушать ${option.examples.first.word}',
-                    onPressed: _playing ? null : () => _playSample(option),
+                    tooltip: 'Послушать ${option.phoneme}',
+                    onPressed: _playing ? null : () => _playPhoneme(option),
                     icon: const Icon(Icons.volume_up_rounded),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      '${option.phoneme}  (${option.examples.first.word})',
+                      option.phoneme,
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 27,
                         fontWeight: FontWeight.w800,
                         color: wrong ? Colors.grey.shade500 : null,
                       ),
@@ -386,10 +377,7 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  _firstTryScore >= 4 ? '🌟' : '👏',
-                  style: const TextStyle(fontSize: 76),
-                ),
+                Text(_firstTryScore >= 4 ? '🌟' : '👏', style: const TextStyle(fontSize: 76)),
                 const SizedBox(height: 18),
                 const Text(
                   'Тренировка закончена!',
