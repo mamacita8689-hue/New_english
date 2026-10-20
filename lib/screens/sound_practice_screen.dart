@@ -76,7 +76,7 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
     }).toList();
   }
 
-  Future<void> _playSound(SoundLesson lesson) async {
+  Future<void> _playSample(SoundLesson lesson) async {
     if (_playing || lesson.phonemeAudioUrl == null) return;
     setState(() => _playing = true);
     try {
@@ -84,7 +84,7 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Не удалось воспроизвести звук.')),
+          const SnackBar(content: Text('Не удалось воспроизвести аудиообразец.')),
         );
       }
     } finally {
@@ -149,7 +149,7 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(listenMode ? 'Услышь звук' : 'Найди правильный звук'),
+        title: Text(listenMode ? 'Услышь сочетание' : 'Найди правильный звук'),
       ),
       body: SafeArea(
         child: Padding(
@@ -209,7 +209,7 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: const Text(
-                              'Попробуй ещё раз. Можно снова послушать звук.',
+                              'Попробуй ещё раз. Можно снова послушать слово-образец.',
                               textAlign: TextAlign.center,
                               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
                             ),
@@ -224,22 +224,29 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
   }
 
   Widget _buildListenPrompt() {
+    final sampleWord = _question.target.examples.first.word;
     return Column(
       children: [
         const Text(
-          'Какое сочетание букв даёт этот звук?',
+          'Послушай слово. Какое сочетание букв в нём слышится?',
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Официальный образец Spotlight: $sampleWord',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
         ),
         const SizedBox(height: 18),
         FilledButton.icon(
           style: FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
           ),
-          onPressed: _playing ? null : () => _playSound(_question.target),
+          onPressed: _playing ? null : () => _playSample(_question.target),
           icon: Icon(_playing ? Icons.hourglass_top : Icons.volume_up_rounded),
           label: Text(
-            _playing ? 'Слушаем…' : 'Послушать звук',
+            _playing ? 'Слушаем…' : 'Послушать слово',
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
         ),
@@ -270,13 +277,11 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
             style: const TextStyle(fontSize: 56, fontWeight: FontWeight.w900),
           ),
         ),
-        if (target.grapheme == 'TH' || target.grapheme == 'OO') ...[
-          const SizedBox(height: 12),
-          Text(
-            'Подсказка: ${target.examples.first.word}',
-            style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
-          ),
-        ],
+        const SizedBox(height: 12),
+        Text(
+          'Пример: ${target.examples.first.word}',
+          style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+        ),
       ],
     );
   }
@@ -286,7 +291,7 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
       children: _question.options.map((option) {
         final wrong = _wrongIds.contains(option.id);
         final correct = _answered && option.id == _question.target.id;
-        final label = (option.grapheme == 'TH' || option.grapheme == 'OO')
+        final label = option.grapheme == 'TH'
             ? '${option.grapheme}\n${option.examples.first.word}'
             : option.grapheme;
 
@@ -343,15 +348,16 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
               child: Row(
                 children: [
                   IconButton.filledTonal(
-                    onPressed: _playing ? null : () => _playSound(option),
+                    tooltip: 'Послушать ${option.examples.first.word}',
+                    onPressed: _playing ? null : () => _playSample(option),
                     icon: const Icon(Icons.volume_up_rounded),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      option.phoneme,
+                      '${option.phoneme}  (${option.examples.first.word})',
                       style: TextStyle(
-                        fontSize: 27,
+                        fontSize: 24,
                         fontWeight: FontWeight.w800,
                         color: wrong ? Colors.grey.shade500 : null,
                       ),
@@ -381,7 +387,7 @@ class _SoundPracticeScreenState extends State<SoundPracticeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  _firstTryScore >= 8 ? '🌟' : '👏',
+                  _firstTryScore >= 4 ? '🌟' : '👏',
                   style: const TextStyle(fontSize: 76),
                 ),
                 const SizedBox(height: 18),
