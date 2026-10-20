@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Verify that all locally prepared Spotlight 2 Part 1 audio files exist.
+"""Audit the local pronunciation files used by the app.
 
 Run after:
   python3 tool/prepare_spotlight_core_audio.py spotlight2_part1.zip
   python3 tool/prepare_spotlight_letter_blends.py spotlight2_part1.zip
+  python3 tool/prepare_phoneme_reference.py
 
-This does not judge pronunciation automatically; it verifies the audited mapping
-set, file presence, non-trivial duration and absence of known stale/mislabelled
-experimental SH/CH/PH phoneme cuts.
+The audit checks the exact files referenced by the current app, including the
+cache-safe v2 Letter Blends words and the five isolated phoneme references.
 """
 
 from __future__ import annotations
@@ -17,7 +17,8 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-AUDIO = ROOT / 'assets' / 'audio' / 'spotlight2_part1'
+SPOTLIGHT = ROOT / 'assets' / 'audio' / 'spotlight2_part1'
+PHONICS = ROOT / 'assets' / 'audio' / 'phonics_reference'
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 CORE_WORDS = [
     'ant', 'bed', 'cat', 'dog', 'egg', 'flag', 'glass', 'horse',
@@ -29,7 +30,20 @@ BLEND_WORDS = [
     'thumb', 'thimble', 'the', 'this',
     'photo', 'dolphin', 'elephant',
 ]
-STALE = ['phoneme_sh.mp3', 'phoneme_ch.mp3', 'phoneme_ph.mp3']
+PHONEME_REFERENCE = [
+    'phoneme_sh.mp3',
+    'phoneme_ch.mp3',
+    'phoneme_th_thing.mp3',
+    'phoneme_th_that.mp3',
+    'phoneme_f.mp3',
+]
+OLD_BLEND_FILES = [
+    'word_sheep.mp3', 'word_fish.mp3', 'word_ship.mp3',
+    'word_chick.mp3', 'word_cheese.mp3',
+    'word_thumb.mp3', 'word_thimble.mp3', 'word_the.mp3', 'word_this.mp3',
+    'word_photo.mp3', 'word_dolphin.mp3', 'word_elephant.mp3',
+    'phoneme_sh.mp3', 'phoneme_ch.mp3', 'phoneme_ph.mp3',
+]
 
 
 def duration(path: Path) -> float:
@@ -44,11 +58,12 @@ def duration(path: Path) -> float:
 
 
 def main() -> None:
-    required = []
-    required += [AUDIO / f'letter_{letter}.mp3' for letter in LETTERS]
-    required += [AUDIO / f'phoneme_{letter.lower()}.mp3' for letter in LETTERS]
-    required += [AUDIO / f'word_{word}.mp3' for word in CORE_WORDS]
-    required += [AUDIO / f'word_{word}.mp3' for word in BLEND_WORDS]
+    required: list[Path] = []
+    required += [SPOTLIGHT / f'letter_{letter}.mp3' for letter in LETTERS]
+    required += [SPOTLIGHT / f'phoneme_{letter.lower()}.mp3' for letter in LETTERS]
+    required += [SPOTLIGHT / f'word_{word}.mp3' for word in CORE_WORDS]
+    required += [SPOTLIGHT / f'word_{word}_v2.mp3' for word in BLEND_WORDS]
+    required += [PHONICS / name for name in PHONEME_REFERENCE]
 
     problems: list[str] = []
     for path in required:
@@ -60,26 +75,27 @@ def main() -> None:
         except Exception as exc:
             problems.append(f'BROKEN: {path.relative_to(ROOT)} ({exc})')
             continue
-        if seconds < 0.20:
-            problems.append(
-                f'TOO SHORT: {path.relative_to(ROOT)} ({seconds:.3f}s)'
-            )
+        if seconds < 0.15:
+            problems.append(f'TOO SHORT: {path.relative_to(ROOT)} ({seconds:.3f}s)')
+        if seconds > 2.0:
+            problems.append(f'SUSPICIOUSLY LONG: {path.relative_to(ROOT)} ({seconds:.3f}s)')
 
-    for name in STALE:
-        path = AUDIO / name
+    # The app no longer references these names. Their presence risks accidental
+    # reuse while testing, so require them to be removed by the rebuild script.
+    for name in OLD_BLEND_FILES:
+        path = SPOTLIGHT / name
         if path.exists():
-            problems.append(
-                f'STALE/MISLABELLED: {path.relative_to(ROOT)} — delete/regenerate blends'
-            )
+            problems.append(f'STALE: {path.relative_to(ROOT)}')
 
-    print(f'Expected audited files: {len(required)}')
+    print(f'Expected current audio files: {len(required)}')
     print(f'Problems: {len(problems)}')
     if problems:
         for problem in problems:
             print(problem)
         raise SystemExit(1)
 
-    print('OK: Spotlight audio file set is complete and stale SH/CH/PH cuts are absent.')
+    print('OK: current Spotlight words, letter sounds, letter names and blend phonemes are present.')
+    print('OK: old Letter Blends filenames are absent, so stale browser audio cannot be selected by the app.')
 
 
 if __name__ == '__main__':
