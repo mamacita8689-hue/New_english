@@ -8,11 +8,15 @@ class LessonAudioService {
 
   static const String _spotlightAudioDir = 'audio/spotlight2_part1';
 
-  static const Set<String> _blendWordsV4 = {
+  static const Set<String> _blendWordsV5 = {
     'sheep', 'fish', 'ship',
     'chick', 'cheese',
-    'thumb', 'thimble', 'the', 'this',
+    'thumb', 'thimble',
     'photo', 'dolphin', 'elephant',
+  };
+
+  static const Set<String> _ttsOnlyWords = {
+    'the', 'this',
   };
 
   static const Map<String, String> _britishLetterNames = {
@@ -55,22 +59,32 @@ class LessonAudioService {
     }
   }
 
+  Future<void> _speakTtsWord(String word) async {
+    await _configureTts();
+    await _tts.stop();
+    await _player.stop();
+    await _tts.setSpeechRate(0.34);
+    await _tts.speak(word);
+  }
+
   Future<void> speakWord(String word) async {
     final safe = _safeName(word);
 
-    if (_blendWordsV4.contains(safe)) {
-      if (await _tryPlayAsset('$_spotlightAudioDir/word_${safe}_v4.mp3')) return;
+    // p.14: the/this are classroom examples, not words from official track 12.
+    if (_ttsOnlyWords.contains(safe)) {
+      await _speakTtsWord(word);
+      return;
+    }
+
+    if (_blendWordsV5.contains(safe)) {
+      if (await _tryPlayAsset('$_spotlightAudioDir/word_${safe}_v5.mp3')) return;
     } else {
       if (await _tryPlayAsset('$_spotlightAudioDir/word_$safe.mp3')) return;
     }
 
     if (await _tryPlayAsset('audio/word_$safe.mp3')) return;
 
-    await _configureTts();
-    await _tts.stop();
-    await _player.stop();
-    await _tts.setSpeechRate(0.38);
-    await _tts.speak(word);
+    await _speakTtsWord(word);
   }
 
   Future<void> speakLetterName(String letter) async {
