@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Audit the local pronunciation files used by the app.
+"""Audit local pronunciation files used by the app.
 
 Run after:
   python3 tool/prepare_spotlight_core_audio.py spotlight2_part1.zip
   python3 tool/prepare_spotlight_letter_blends.py spotlight2_part1.zip
   python3 tool/prepare_phoneme_reference.py
 
-The audit checks the exact files referenced by the current app, including the
-cache-safe v2 Letter Blends words and the five isolated phoneme references.
+The voiced-TH words "the" and "this" are intentionally excluded from the
+official Spotlight clip list because the p.14 track does not contain separate
+recordings of those words; the app falls back to en-GB TTS for them.
 """
 
 from __future__ import annotations
@@ -25,25 +26,22 @@ CORE_WORDS = [
     'ink', 'jug', 'kangaroo', 'lamp', 'mouse', 'nest', 'orange', 'pin', 'queen',
     'rabbit', 'snake', 'tree', 'umbrella', 'vest', 'window', 'box', 'yacht', 'zip',
 ]
-BLEND_WORDS = [
+BLEND_WORDS_V3 = [
     'sheep', 'fish', 'ship', 'chick', 'cheese',
-    'thumb', 'thimble', 'the', 'this',
-    'photo', 'dolphin', 'elephant',
+    'thumb', 'thimble', 'photo', 'dolphin', 'elephant',
 ]
 PHONEME_REFERENCE = [
-    'phoneme_sh.mp3',
-    'phoneme_ch.mp3',
-    'phoneme_th_thing.mp3',
-    'phoneme_th_that.mp3',
-    'phoneme_f.mp3',
+    'phoneme_sh.mp3', 'phoneme_ch.mp3',
+    'phoneme_th_thing.mp3', 'phoneme_th_that.mp3', 'phoneme_f.mp3',
 ]
-OLD_BLEND_FILES = [
-    'word_sheep.mp3', 'word_fish.mp3', 'word_ship.mp3',
-    'word_chick.mp3', 'word_cheese.mp3',
-    'word_thumb.mp3', 'word_thimble.mp3', 'word_the.mp3', 'word_this.mp3',
-    'word_photo.mp3', 'word_dolphin.mp3', 'word_elephant.mp3',
-    'phoneme_sh.mp3', 'phoneme_ch.mp3', 'phoneme_ph.mp3',
-]
+
+STALE = []
+for word in [
+    'sheep', 'fish', 'ship', 'chick', 'cheese', 'thumb', 'thimble',
+    'the', 'this', 'photo', 'dolphin', 'elephant',
+]:
+    STALE += [f'word_{word}.mp3', f'word_{word}_v2.mp3']
+STALE += ['phoneme_sh.mp3', 'phoneme_ch.mp3', 'phoneme_ph.mp3']
 
 
 def duration(path: Path) -> float:
@@ -62,7 +60,7 @@ def main() -> None:
     required += [SPOTLIGHT / f'letter_{letter}.mp3' for letter in LETTERS]
     required += [SPOTLIGHT / f'phoneme_{letter.lower()}.mp3' for letter in LETTERS]
     required += [SPOTLIGHT / f'word_{word}.mp3' for word in CORE_WORDS]
-    required += [SPOTLIGHT / f'word_{word}_v2.mp3' for word in BLEND_WORDS]
+    required += [SPOTLIGHT / f'word_{word}_v3.mp3' for word in BLEND_WORDS_V3]
     required += [PHONICS / name for name in PHONEME_REFERENCE]
 
     problems: list[str] = []
@@ -80,9 +78,7 @@ def main() -> None:
         if seconds > 2.0:
             problems.append(f'SUSPICIOUSLY LONG: {path.relative_to(ROOT)} ({seconds:.3f}s)')
 
-    # The app no longer references these names. Their presence risks accidental
-    # reuse while testing, so require them to be removed by the rebuild script.
-    for name in OLD_BLEND_FILES:
+    for name in STALE:
         path = SPOTLIGHT / name
         if path.exists():
             problems.append(f'STALE: {path.relative_to(ROOT)}')
@@ -94,8 +90,9 @@ def main() -> None:
             print(problem)
         raise SystemExit(1)
 
-    print('OK: current Spotlight words, letter sounds, letter names and blend phonemes are present.')
-    print('OK: old Letter Blends filenames are absent, so stale browser audio cannot be selected by the app.')
+    print('OK: all current local audio files are present and readable.')
+    print('OK: no old v1/v2 Letter Blends clips remain.')
+    print('NOTE: the/this use en-GB TTS because the official p.14 track has no separate clips for them.')
 
 
 if __name__ == '__main__':
